@@ -1,4 +1,3 @@
-
 // ref: https://umijs.org/config/
 export default {
   treeShaking: true,
@@ -60,6 +59,26 @@ export default {
                   path: '/more/menu',
                   name: '菜单管理',
                   component: './menu',
+                },
+                {
+                  path: '/more/log',
+                  name: '操作日志',
+                  component: './log',
+                },
+                {
+                  path: '/more/updateCC',
+                  name: '中控升级',
+                  component: './updateCC',
+                },
+                {
+                  path: '/more/updateTouch',
+                  name: '触摸屏升级',
+                  component: './updateTouch',
+                },
+                {
+                  path: '/more/updateAI',
+                  name: 'AI升级',
+                  component: './updateAI',
                 },
               ],
             },

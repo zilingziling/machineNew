@@ -1,8 +1,31 @@
 import React from 'react';
-
-const Role =()=>{
+import { Button, Input, Table } from 'antd';
+const Role = () => {
+  const column = [
+    {
+      title: '角色名称',
+    },
+    {
+      title: '角色代码',
+    },
+    {
+      title: '操作',
+    },
+  ];
   return (
-    <h1>role</h1>
-  )
-}
-export default Role
+    <div className="normalWrap">
+      <div className='searchWrapper'>
+        <span>角色名称：</span>
+        <Input className="searchInput mr1" />
+        <Button className="shadowBtn">搜索</Button>
+      </div>
+      <br />
+      <Button className="shadowBtn">新增</Button>
+      <Table
+        className='normalTable'
+      columns={column}
+      />
+    </div>
+  );
+};
+export default Role;

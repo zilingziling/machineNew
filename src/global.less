@@ -1,3 +1,4 @@
+@import "./changeAntStyle.less";
 html,
 body,
 #root {
@@ -16,6 +17,8 @@ ul,
 li {
   margin: 0;
   padding: 0;
+  color: #ffffff;
+  font-family: "MicrosoftYaHei";
 }
 
 .blue {
@@ -37,19 +40,68 @@ li {
     color: #fff;
   }
 }
-.normalTable {
-  margin-top: 1rem;
-  width: 85vw;
 
-  table{
-    background: rgba(56, 150, 222, 0.6);
-  }
-  table>tbody>tr:hover{
-    background: #5caef6 ;
-  }
+
+//  公用table样式
+
+.normalTable{
+  width: 87vw;
+  margin-top: 1rem;
+}
+
+// 布局
+.normalWrap{
+  box-sizing: border-box;
+  padding:1rem 0 0 12rem;
+}
+
+// input
+.searchInput{
+  width: 13rem;
 
 }
-.tableRow{
-  color: #ffffff;
 
+.mr1{
+  margin-right: 1rem;
+}
+.searchWrapper{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+// 树菜单布局
+.treeWrapper{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-sizing: border-box;
+  padding: 1rem 2rem 0 2rem ;
+}
+.normalTree{
+  width: 11.5vw;
+  min-width: 11.5vw;
+  margin-right: 1rem;
+  color: #ffffff;
+  height: 70vh;
+  overflow: auto;
+}
+
+.mt0{
+  margin-top: 0;
+}
+.mt1{
+  margin-top: 1rem;
+}
+.pl0{
+  padding-left: 0;
+}
+
+.formItem{
+  margin-bottom: 0;
+  display: flex;
+  color: #ffffff;
+  margin-right: 1rem;
+}
+.red{
+  color: #FF0000;
 }
