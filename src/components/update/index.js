@@ -29,7 +29,7 @@ const Update = ({ title, info }) => {
           <span>文件名字</span>
           <span>上传日期</span>
         </section>
-        <p className={styles.note}>注意：中控重启升级过程中为保证正常升级，请不要断电！</p>
+        <p className={styles.note}>注意：升级过程中为保证正常升级，请不要断电！</p>
       </div>
     </div>
   );

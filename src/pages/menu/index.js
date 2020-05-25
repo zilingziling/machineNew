@@ -29,7 +29,7 @@ const Menu = () => {
   ];
 
   return (
-    <div className="treeWrapper pl0">
+    <div className="treeWrapper">
       <div>
         <div className={styles.ope}>
           <span className={styles.clicked}>新增</span>
