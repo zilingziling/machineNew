@@ -22,7 +22,7 @@ export default {
               path: '/deviceControl',
               name: '设备控制',
               icon: 'deviceIcon',
-              component: './deviceControl',
+              component: './deviceControl/deviceCtrl.js',
             },
             {
               path: '/warning',
@@ -119,4 +119,11 @@ export default {
       },
     ],
   ],
+  proxy: {
+    '/api': {
+      target: '',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
+    },
+  },
 };

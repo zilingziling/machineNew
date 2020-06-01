@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Bar from '../component/Bar/deviceSeleclass';
-import { Button, Input, message, Spin, Alert, Modal } from 'antd';
+import { Button, Input, message, Spin, Alert, Modal, Tree } from 'antd';
 import './index.less';
 import SingleRoom from './components/singleRoom';
-import { control, getStatus } from '../../api/deviceForele';
-import {
-  handleProjector,
-  stateCtrLight,
-  uint8Buff2Str,
-} from '../component/function/formatDateReturn';
-import socket from '../../stores/socket';
+import { getStatus } from '../../service/deviceCtrlReq';
+const { DirectoryTree } = Tree;
+// import {
+//   handleProjector,
+//   stateCtrLight,
+//   uint8Buff2Str,
+// } from '../component/function/formatDateReturn';
+// import socket from '../../stores/socket';
 const { confirm } = Modal;
-const DeviceForElectron = () => {
+const DeviceCtrl = () => {
   const getInitSelect = () => {
     if (window.localStorage.getItem('CtrClassrommid')) {
       return window.localStorage.getItem('CtrClassrommid').split(':')[0];
@@ -48,7 +48,7 @@ const DeviceForElectron = () => {
   // 加载中
   const [spin, setSpin] = useState(false);
   // init
-  const init = (reset = false) => {
+  const init = useCallback((reset = false) => {
     if (!schoolId) return;
     setSpin(true);
     getStatus({ id: schoolId, keyword: reset ? '' : searchValue }).then(r => {
@@ -67,10 +67,10 @@ const DeviceForElectron = () => {
         // setData(r.data);
       }
     });
-  };
+  });
   useEffect(() => {
     init();
-  }, []);
+  }, [init]);
   useEffect(() => {
     let array = [];
     data &&
@@ -109,7 +109,7 @@ const DeviceForElectron = () => {
         });
       });
     }
-  }, [data]);
+  }, [data, selectId]);
 
   const docClick = () => {
     let newData =
@@ -136,29 +136,35 @@ const DeviceForElectron = () => {
         document.removeEventListener('click', docClick);
       };
     }
-  }, [selectId]);
-  const onSelectSchool = (id, e) => {
-    setTreePosition(e.node.props.title);
-    if (e.node.props.dataref.key.includes('school_academic_building')) {
-      setSpin(true);
-      setSchool(id);
-      setControl([]);
-      getStatus({ id, keyword: searchValue }).then(r => {
-        if (r.data) {
-          setSpin(false);
-          toOringin(r.data);
-          // setData(r.data);
-        }
-      });
-    } else {
-      setSchool('');
-      setData([]);
+  }, [docClick, selectId]);
+  const onSelectSchool = (key, e) => {
+    let id;
+    if (e.selectedNodes.length > 0) {
+      let obj = e.selectedNodes[0].props.dataref.row;
+      id = obj.id;
+      //   next
+      setTreePosition(e.node.props.title);
+      if (e.node.props.dataref.key.includes('school_academic_building')) {
+        setSpin(true);
+        setSchool(id);
+        setControl([]);
+        getStatus({ id, keyword: searchValue }).then(r => {
+          if (r.data) {
+            setSpin(false);
+            toOringin(r.data);
+            // setData(r.data);
+          }
+        });
+      } else {
+        setSchool('');
+        setData([]);
+      }
     }
   };
   // socket
-  useEffect(() => {
-    _infomsg();
-  }, [socket, data]);
+  // useEffect(() => {
+  //   _infomsg();
+  // }, [socket, data]);
   const roomProps = {
     roomControls,
     setControl,
@@ -180,7 +186,7 @@ const DeviceForElectron = () => {
       message.info('请先选择教室！');
     }
   };
-  const toOringin = oriData => {
+  const toOringin = useCallback(oriData => {
     let ary = [];
     if (oriData) {
       ary = oriData;
@@ -194,7 +200,7 @@ const DeviceForElectron = () => {
       return inner;
     });
     setData(newData);
-  };
+  });
   useEffect(() => {
     if (!batch) {
       toOringin();
@@ -203,7 +209,7 @@ const DeviceForElectron = () => {
       setClassStatus({});
       setSelectId('');
     }
-  }, [batch]);
+  }, [batch, toOringin]);
 
   useEffect(() => {
     if (selectId && data) {
@@ -216,7 +222,7 @@ const DeviceForElectron = () => {
       });
       setData(newData);
     }
-  }, [selectId]);
+  }, [data, selectId]);
   const toConfig = () => {
     window._guider.History.history.push({
       pathname: '/deviceAdd',
@@ -237,44 +243,44 @@ const DeviceForElectron = () => {
   };
   //接受websock消息
   const _infomsg = () => {
-    window.ws.onmessage = evt => {
-      let baseMsg = proto.cn.yjtianxia.im.protocol2.BaseMsg.deserializeBinary(evt.data);
-      let objdata;
-      try {
-        objdata = uint8Buff2Str(baseMsg.getData());
-        console.log('socket数据', JSON.parse(objdata));
-        objdata = JSON.parse(objdata);
-        setSocket(objdata);
-        console.log(data);
-        if (data.length > 0) {
-          console.log(1);
-          let ary = data;
-          console.log(objdata.classroomData.classroomId);
-          ary = ary.map(room => {
-            room.classroomData.map(classroom => {
-              if (classroom.classroomId === objdata.classroomData.classroomId) {
-                if (objdata.classroomData.masterEquipment.length) {
-                  classroom.masterEquipment.map(i => {
-                    objdata.classroomData.masterEquipment.map(e => {
-                      if (i.equipCode === e.equipCode) {
-                        i.equipType = e.equipType;
-                      }
-                    });
-                  });
-                }
-                classroom.classroomType = objdata.classroomData.classroomType;
-                classroom.loading = objdata.classroomData.loading;
-              }
-              return classroom;
-            });
-            return room;
-          });
-          setData(ary);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    // window.ws.onmessage = evt => {
+    //   let baseMsg = proto.cn.yjtianxia.im.protocol2.BaseMsg.deserializeBinary(evt.data);
+    //   let objdata;
+    //   try {
+    //     objdata = uint8Buff2Str(baseMsg.getData());
+    //     console.log('socket数据', JSON.parse(objdata));
+    //     objdata = JSON.parse(objdata);
+    //     setSocket(objdata);
+    //     console.log(data);
+    //     if (data.length > 0) {
+    //       console.log(1);
+    //       let ary = data;
+    //       console.log(objdata.classroomData.classroomId);
+    //       ary = ary.map(room => {
+    //         room.classroomData.map(classroom => {
+    //           if (classroom.classroomId === objdata.classroomData.classroomId) {
+    //             if (objdata.classroomData.masterEquipment.length) {
+    //               classroom.masterEquipment.map(i => {
+    //                 objdata.classroomData.masterEquipment.map(e => {
+    //                   if (i.equipCode === e.equipCode) {
+    //                     i.equipType = e.equipType;
+    //                   }
+    //                 });
+    //               });
+    //             }
+    //             classroom.classroomType = objdata.classroomData.classroomType;
+    //             classroom.loading = objdata.classroomData.loading;
+    //           }
+    //           return classroom;
+    //         });
+    //         return room;
+    //       });
+    //       setData(ary);
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // };
   };
   const [waringShow, setWarningShow] = useState(true);
   const buttonProps = {
@@ -317,96 +323,107 @@ const DeviceForElectron = () => {
     );
   };
   return (
-    <div className="eleControlOut">
+    <div className="treeWrapper">
       {/*树菜单*/}
-      <Bar renderValue={onSelectSchool} />
-      <Spin wrapperClassName="spinWrapper" tip="加载中..." size="large" spinning={spin}>
-        {schoolId ? (
-          data.length > 0 ? (
-            <div className="controlDisc">
-              <div className="batchOpe">
-                <div className="topButtons">
-                  <Button type="primary" onClick={onClickBatch}>
-                    {batch ? '取消批量操作' : '批量操作设备'}
-                  </Button>
-                  <Button type="primary" disabled={batch} onClick={toConfig}>
-                    打开配置页面
-                  </Button>
-                  <Input
-                    value={searchValue}
-                    onChange={e => setSearch(e.target.value)}
-                    style={{ width: '8rem', margin: '0 .5rem 0 1rem' }}
-                    placeholder="输入教室号"
-                    onPressEnter={() => init()}
-                  />
-                  <Button type="primary" disabled={!searchValue} onClick={() => init()}>
-                    搜索
-                  </Button>
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      setSearch('');
-                      init(true);
-                    }}
-                  >
-                    重置
-                  </Button>
-                  {Number(deleteClassroomSize) > 0 && waringShow ? (
-                    <Alert message={getWarning()} type="warning" showIcon />
-                  ) : null}
-                </div>
-                <p>
-                  <span>
-                    {data ? (data.length && schoolId ? data[0].schoolData : treePosition) : ''}
-                  </span>
-                  <span>上课：{classroomTypeSize}</span>
-                  <span>故障：{breakSize}</span>
-                </p>
-              </div>
-              {/*教室列表*/}
-              <div className="rooms">
-                {batch && (
-                  <div className="selectA" onClick={onSelectAll}>
-                    <img
-                      src={
-                        selectAll
-                          ? require('../../assets/deviceControl/checked.png')
-                          : require('../../assets/deviceControl/check.png')
-                      }
-                      alt="check"
+      <DirectoryTree
+        multiple
+        showLine
+        defaultExpandAll
+        onSelect={onSelectSchool}
+        onExpand={onExpand}
+        treeData={treeData}
+        className="normalTree"
+        showIcon={false}
+      />
+      <div className="normalTable mt0">
+        <Spin wrapperClassName="spinWrapper" tip="加载中..." size="large" spinning={spin}>
+          {schoolId ? (
+            data.length > 0 ? (
+              <div className="controlDisc">
+                <div className="batchOpe">
+                  <div className="topButtons">
+                    <Button type="primary" onClick={onClickBatch}>
+                      {batch ? '取消批量操作' : '批量操作设备'}
+                    </Button>
+                    <Button type="primary" disabled={batch} onClick={toConfig}>
+                      打开配置页面
+                    </Button>
+                    <Input
+                      value={searchValue}
+                      onChange={e => setSearch(e.target.value)}
+                      style={{ width: '8rem', margin: '0 .5rem 0 1rem' }}
+                      placeholder="输入教室号"
+                      onPressEnter={() => init()}
                     />
-                    <span>选择全部</span>
+                    <Button type="primary" disabled={!searchValue} onClick={() => init()}>
+                      搜索
+                    </Button>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        setSearch('');
+                        init(true);
+                      }}
+                    >
+                      重置
+                    </Button>
+                    {Number(deleteClassroomSize) > 0 && waringShow ? (
+                      <Alert message={getWarning()} type="warning" showIcon />
+                    ) : null}
                   </div>
-                )}
-                {data &&
-                  data.map((item, index) => (
-                    <Rooms {...roomProps} innerData={item} key={`${index}group`} />
-                  ))}
+                  <p>
+                    <span>
+                      {data ? (data.length && schoolId ? data[0].schoolData : treePosition) : ''}
+                    </span>
+                    <span>上课：{classroomTypeSize}</span>
+                    <span>故障：{breakSize}</span>
+                  </p>
+                </div>
+                {/*教室列表*/}
+                <div className="rooms">
+                  {batch && (
+                    <div className="selectA" onClick={onSelectAll}>
+                      <img
+                        src={
+                          selectAll
+                            ? require('../../assets/deviceControl/checked.png')
+                            : require('../../assets/deviceControl/check.png')
+                        }
+                        alt="check"
+                      />
+                      <span>选择全部</span>
+                    </div>
+                  )}
+                  {data &&
+                    data.map((item, index) => (
+                      <Rooms {...roomProps} innerData={item} key={`${index}group`} />
+                    ))}
+                </div>
+                <div className="batchControl">
+                  {selectId || batch ? (
+                    <Buttons {...buttonProps} btns={batch ? allBtn : roomControls} />
+                  ) : (
+                    <div className="deviceNotice">
+                      <img src={require('../../assets/deviceControl/notice.png')} alt="notice" />
+                      <span>请在上面选择需要控制的教室</span>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="batchControl">
-                {selectId || batch ? (
-                  <Buttons {...buttonProps} btns={batch ? allBtn : roomControls} />
-                ) : (
-                  <div className="deviceNotice">
-                    <img src={require('../../assets/deviceControl/notice.png')} alt="notice" />
-                    <span>请在上面选择需要控制的教室</span>
-                  </div>
-                )}
+            ) : (
+              <div className="selectNotice">
+                <img src={require('../../assets/deviceControl/notice.png')} alt="notice" />
+                <h2>暂无教室信息！</h2>
               </div>
-            </div>
+            )
           ) : (
             <div className="selectNotice">
               <img src={require('../../assets/deviceControl/notice.png')} alt="notice" />
-              <h2>暂无教室信息！</h2>
+              <h2>请选择教学楼！</h2>
             </div>
-          )
-        ) : (
-          <div className="selectNotice">
-            <img src={require('../../assets/deviceControl/notice.png')} alt="notice" />
-            <h2>请选择教学楼！</h2>
-          </div>
-        )}
-      </Spin>
+          )}
+        </Spin>
+      </div>
     </div>
   );
 };
@@ -454,69 +471,69 @@ const Buttons = ({
       idAry.push(ids.equipclassroomId);
     }
     if (idAry.length > 0) {
-      control({ ...ids, equipclassroomId: idAry }).then(r => {
-        if (r.code === 200) {
-          window._guider.Utils.alert({
-            message: r.msg,
-            type: 'success',
-          });
-          if (batch) {
-            let newData =
-              data &&
-              data.map(room => {
-                room.classroomData.map(inner => {
-                  if (inner.clickStatus === true) {
-                    inner.loading = true;
-                  }
-                });
-                return room;
-              });
-            setData(newData);
-            setBatch(false);
-          } else {
-            let newData =
-              data &&
-              data.map(room => {
-                room.classroomData.map(inner => {
-                  if (inner.classroomId === selectId) {
-                    inner.loading = true;
-                  }
-                });
-                return room;
-              });
-            setData(newData);
-          }
-          setTimeout(() => {
-            if (!Object.keys(socket).length) {
-              // 超时未响应
-              let newData =
-                data &&
-                data.map(room => {
-                  room.classroomData.map(inner => {
-                    if (inner.loading === true) {
-                      inner.loading = false;
-                    }
-                  });
-                  return room;
-                });
-              setData(newData);
-            }
-          }, 110000);
-          setTimeout(() => {
-            let newData =
-              data &&
-              data.map(room => {
-                room.classroomData.map(inner => {
-                  if (inner.loading === true) {
-                    inner.loading = false;
-                  }
-                });
-                return room;
-              });
-            setData(newData);
-          }, 140000);
-        }
-      });
+      // control({ ...ids, equipclassroomId: idAry }).then(r => {
+      //   if (r.code === 200) {
+      //     window._guider.Utils.alert({
+      //       message: r.msg,
+      //       type: 'success',
+      //     });
+      //     if (batch) {
+      //       let newData =
+      //         data &&
+      //         data.map(room => {
+      //           room.classroomData.map(inner => {
+      //             if (inner.clickStatus === true) {
+      //               inner.loading = true;
+      //             }
+      //           });
+      //           return room;
+      //         });
+      //       setData(newData);
+      //       setBatch(false);
+      //     } else {
+      //       let newData =
+      //         data &&
+      //         data.map(room => {
+      //           room.classroomData.map(inner => {
+      //             if (inner.classroomId === selectId) {
+      //               inner.loading = true;
+      //             }
+      //           });
+      //           return room;
+      //         });
+      //       setData(newData);
+      //     }
+      //     setTimeout(() => {
+      //       if (!Object.keys(socket).length) {
+      //         // 超时未响应
+      //         let newData =
+      //           data &&
+      //           data.map(room => {
+      //             room.classroomData.map(inner => {
+      //               if (inner.loading === true) {
+      //                 inner.loading = false;
+      //               }
+      //             });
+      //             return room;
+      //           });
+      //         setData(newData);
+      //       }
+      //     }, 110000);
+      //     setTimeout(() => {
+      //       let newData =
+      //         data &&
+      //         data.map(room => {
+      //           room.classroomData.map(inner => {
+      //             if (inner.loading === true) {
+      //               inner.loading = false;
+      //             }
+      //           });
+      //           return room;
+      //         });
+      //       setData(newData);
+      //     }, 140000);
+      //   }
+      // });
     } else message.error('你还未选择要控制的教室！');
   };
   return (
@@ -624,7 +641,7 @@ const Rooms = ({
     if (ary.length === innerData.classroomData.length) {
       setGroup(true);
     } else setGroup(false);
-  }, [data]);
+  }, [data, innerData.classroomData]);
   return (
     <div className="roomsRow">
       {batch && (
@@ -648,4 +665,29 @@ const Rooms = ({
   );
 };
 
-export default DeviceForElectron;
+export default DeviceCtrl;
+const treeData = [
+  {
+    title: 'parent 0',
+    key: '0-0',
+    children: [
+      { title: 'leaf 0-0', key: '0-0-0', isLeaf: true },
+      { title: 'leaf 0-1', key: '0-0-1', isLeaf: true },
+    ],
+  },
+  {
+    title: 'parent 1',
+    key: '0-1',
+    children: [
+      { title: 'leaf 1-0', key: '0-1-0', isLeaf: true },
+      { title: 'leaf 1-1', key: '0-1-1', isLeaf: true },
+    ],
+  },
+];
+const onSelect = (keys, event) => {
+  console.log('Trigger Select', keys, event);
+};
+
+const onExpand = () => {
+  console.log('Trigger Expand');
+};

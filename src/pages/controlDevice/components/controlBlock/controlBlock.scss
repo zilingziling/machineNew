@@ -1,0 +1,141 @@
+.wholeBlock{
+ max-width: 22.45rem;;
+}
+.blockWrap{
+  background: #0D1D4D;
+  border-radius: 1px;
+  border: 1px solid #0e4fb0;
+  height: 7.5rem;
+  transition: all .3s;
+  animation:fadeIn;
+  .titleRow{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: .4rem;
+
+  }
+  .collapse{
+    border:1px dashed rgba(0,255,255,.4);
+    border-radius:1px;
+    color:#00FFFF;
+    margin: .2rem .1rem 0 0 ;
+    cursor: pointer;
+    user-select: none;
+    img[alt="collapse"]{
+      width: 14px;
+      height: 14px;
+      margin-right: .2rem;
+    }
+    span{
+      margin:0 .2rem;
+    }
+  }
+  .flexBox{
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    .slideType{
+      display: grid;
+      grid-template-columns: 10% 80% 10%;
+      grid-column-gap: .3rem;
+      align-items: center;
+      margin-top: 1rem;
+      width: 80%;
+      .imgWrap{
+        width: 2rem;
+        height: 2rem;
+        background:rgba(37, 148, 251, 0.1) ;
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      span{
+        font-size: 16px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #a4d2fd;
+      }
+      .sliderBar{
+        width: 94%;
+      }
+    }
+  }
+}
+.rest{
+  grid-template-columns: repeat(2, 1fr);
+  width: 204.5%;
+  display: grid;
+  background: #0D1D4D;
+  border-radius: 1px;
+  border-bottom: 1px solid #0e4fb0;
+  border-right: 1px solid #0e4fb0;
+  border-left: 1px solid #0e4fb0;
+
+  .left,.right{
+    box-sizing: border-box;
+    height: 5rem;
+    .leftInside,.rightInside{
+      background:rgba(15,41,95,1);
+      width: 100%;
+      height: 100%;
+      border-radius: 2px;
+      box-sizing: border-box;
+      padding:0 .4rem;
+      p{
+        font-size: 16px;
+        margin-bottom: .2rem;
+        margin-left: 1rem;
+        margin-top: .2rem;
+        display: inline-block;
+      }
+      .noPicBtns{
+        display: flex;
+        justify-content: space-evenly;
+        box-sizing: border-box;
+        padding:.2rem;
+        align-items: center;
+        button{
+          box-shadow: none;
+          border: 1px solid #89F3FA;
+          transition: all 0.2s;
+          cursor: pointer;
+          width: 22%;
+          &:hover{
+            background: #0a5756;
+            animation: spring 300ms ease-out;
+            span {
+              color: #ffffff;
+            }
+          }
+          &:focus{
+            background: rgba(0, 188, 255, 0.1);
+          }
+          &.active{
+            background: #0a5756;
+          }
+
+          span{
+            color: #89F3FA;
+          }
+        }
+
+      }
+
+    }
+  }
+  .left{
+    padding: .5rem 0 .5rem .5rem;
+    position: relative;
+    img[alt="restDivide"]{
+      position: absolute;
+      top: 1rem;
+      right: 0;
+    }
+  }
+  .right{
+    padding: .5rem  .5rem .5rem 0;
+  }
+}
+

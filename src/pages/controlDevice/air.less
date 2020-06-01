@@ -1,0 +1,128 @@
+// 空调
+.airRest{
+  height:fit-content;
+  border-bottom:1px solid #45e9fc ;
+  border-right:1px solid #45e9fc ;
+  border-left:1px solid #45e9fc ;
+  transition: all .3s;
+  animation:fadeIn;
+  box-sizing: border-box;
+  .restBlockWrap{
+    box-sizing: border-box;
+    padding: .6rem;
+  }
+  .flexBtn{
+    p{
+      font-size: 16px;
+      margin-bottom: .2rem;
+      margin-left: 1rem;
+      margin-top: .2rem;
+      display: inline-block;
+    }
+
+  }
+  .noPicBtns{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0 4.5rem;
+    box-sizing: border-box;
+    button{
+      box-shadow: none;
+      border: 1px solid #89F3FA;
+      transition: all 0.2s;
+      cursor: pointer;
+      width: 22%;
+      &:hover{
+        background: #0a5756;
+        animation: spring 300ms ease-out;
+        span {
+          color: #ffffff;
+        }
+      }
+      &.active{
+        background: #0a5756;
+      }
+
+      span{
+        color: #89F3FA;
+      }
+    }
+  }
+}
+.airCondition {
+  width: 100%;
+  height: 11.8rem;
+  background: #0d1d4d;
+  border: 1px solid rgba(14, 79, 176, 1);
+  border-radius: 1px;
+  margin-top: 18px;
+  transition: all .3s;
+  animation:fadeIn;
+  .titleFlex{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding-right: .2rem;
+    .collapse{
+      border:1px dashed rgba(0,255,255,.4);
+      border-radius:1px;
+      color:#00FFFF;
+      margin: .2rem .1rem 0 0 ;
+      cursor: pointer;
+      user-select: none;
+      img[alt="collapse"]{
+        width: 14px;
+        height: 14px;
+        margin-right: .2rem;
+      }
+      span{
+        margin:0 .2rem;
+      }
+    }
+  }
+  .airBtns {
+    margin: 0.5rem 5rem;
+
+    .flexBtn {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+}
+.bg{
+  background:#0F295F ;
+  box-sizing: border-box;
+}
+.airTem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1rem;
+  span {
+    font-size: 30px;
+    font-family: Microsoft YaHei;
+    font-weight: 400;
+    color: rgba(164, 210, 253, 1);
+    margin-right: 2rem;
+  }
+  .sliderBar {
+    width: 5rem;
+    height: 3rem;
+    background: rgba(37, 148, 251, 0.1);
+    border-radius: 4px;
+    flex-grow: 1;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    .slider {
+      width: 17rem;
+    }
+  }
+}
+.btnPadding{
+  box-sizing: border-box;
+  padding: 0 4.5rem .5rem;
+}

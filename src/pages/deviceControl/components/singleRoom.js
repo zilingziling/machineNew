@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import '../index.less';
 import { Tooltip } from 'antd';
 import schedule from '../../../assets/deviceControl/schedule.png';
-import { getUuid } from '../../../utils/handleNumbers';
 const SingleRoom = ({
   roomInfo,
   setControl,

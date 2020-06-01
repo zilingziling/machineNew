@@ -1,0 +1,18 @@
+.videoWrap {
+  display: flex;
+  width: 100%;
+  height: 11rem;
+  background: #0d1d4d;
+  border: 1px solid rgba(14, 79, 176, 1);
+  border-radius: 1px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  .video {
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    // cursor: pointer;
+    // z-index: 998;
+  }
+}
