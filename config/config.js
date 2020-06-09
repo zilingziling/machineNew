@@ -120,10 +120,10 @@ export default {
     ],
   ],
   proxy: {
-    '/api': {
-      target: '',
+    '/baseapi': {
+      target: 'http://172.16.3.104:8103/', //dev
       changeOrigin: true,
-      pathRewrite: { '^/api': '' },
+      pathRewrite: { '^/baseapi': '' },
     },
   },
 };

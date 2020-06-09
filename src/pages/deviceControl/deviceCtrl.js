@@ -48,7 +48,7 @@ const DeviceCtrl = () => {
   // 加载中
   const [spin, setSpin] = useState(false);
   // init
-  const init = useCallback((reset = false) => {
+  const init = (reset = false) => {
     if (!schoolId) return;
     setSpin(true);
     getStatus({ id: schoolId, keyword: reset ? '' : searchValue }).then(r => {
@@ -67,7 +67,7 @@ const DeviceCtrl = () => {
         // setData(r.data);
       }
     });
-  });
+  };
   useEffect(() => {
     init();
   }, [init]);
@@ -186,7 +186,7 @@ const DeviceCtrl = () => {
       message.info('请先选择教室！');
     }
   };
-  const toOringin = useCallback(oriData => {
+  const toOringin = oriData => {
     let ary = [];
     if (oriData) {
       ary = oriData;
@@ -200,7 +200,7 @@ const DeviceCtrl = () => {
       return inner;
     });
     setData(newData);
-  });
+  };
   useEffect(() => {
     if (!batch) {
       toOringin();

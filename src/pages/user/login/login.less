@@ -43,6 +43,13 @@
       padding: 3.2rem 2rem 0;
       .form{
         width: 100%;
+        .flex{
+          :global(.ant-form-item-children){
+            display: flex;
+            align-items: center;
+          }
+
+        }
         input{
           height: 40px;
           background: rgba(51,102,203,.4);

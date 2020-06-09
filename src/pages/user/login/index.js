@@ -1,7 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './login.less';
 import { Form, Button, Input } from 'antd';
-const Login = ({ form }) => {
+const Login = ({}) => {
+  const [form] = Form.useForm();
+  const [authCode, setCode] = useState('');
+  const [account, setAccount] = useState('');
+  const [password, setPassword] = useState('');
+  const [code, setAuth] = useState('');
+  useEffect(() => {
+    getCode();
+  }, []);
+  const getCode = () => {
+    form.setFieldsValue('code', '');
+    const numbers = Math.floor(Math.random() * 10000);
+    let code = 'baseapi/integrated/identifyingCode?' + parseInt(numbers);
+    setCode(code);
+  };
   return (
     <div className={styles.loginWrapper}>
       <h1>弈简运维管控平台</h1>
@@ -9,7 +23,7 @@ const Login = ({ form }) => {
         <h6>用户登录</h6>
         <div className={styles.loginForm}>
           <Form className={styles.form}>
-            <Form.Item name="username" rules={[{ required: true, message: '请输入账号！' }]}>
+            <Form.Item name="account" rules={[{ required: true, message: '请输入账号！' }]}>
               <Input
                 maxLength={20}
                 placeholder="请输入账号"
@@ -28,7 +42,11 @@ const Login = ({ form }) => {
               />
             </Form.Item>
 
-            <Form.Item name="vertify" rules={[{ required: true, message: '请输入验证码！' }]}>
+            <Form.Item
+              className={styles.flex}
+              name="code"
+              rules={[{ required: true, message: '请输入验证码！' }]}
+            >
               <Input
                 className={styles.vertify}
                 placeholder="请输入验证码"
@@ -40,7 +58,7 @@ const Login = ({ form }) => {
                   />
                 }
               />
-              <img className={styles.vertifyImg} src="" />
+              <img className={styles.vertifyImg} src={authCode} onClick={getCode} />
             </Form.Item>
 
             <Form.Item>
