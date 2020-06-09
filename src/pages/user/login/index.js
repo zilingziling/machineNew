@@ -4,7 +4,7 @@ import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Button, Input } from 'antd';
 const Login = ({}) => {
-  const [form] = Form.useForm();
+  // const [form] = Form.useForm();
   const [authCode, setCode] = useState('');
   const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +13,7 @@ const Login = ({}) => {
     getCode();
   }, []);
   const getCode = () => {
-    form.setFieldsValue('code', '');
+    // form.setFieldsValue('code', '');
     const numbers = Math.floor(Math.random() * 10000);
     let code = 'baseapi/integrated/identifyingCode?' + parseInt(numbers);
     setCode(code);
