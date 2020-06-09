@@ -1,5 +1,7 @@
 import React from 'react';
-import { Button, Input, Table, Form, Radio, DatePicker } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Input, Table, Radio, DatePicker } from 'antd';
 import styles from './index.less';
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styles from './login.less';
-import { Form, Button, Input } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Input } from 'antd';
 const Login = ({}) => {
   const [form] = Form.useForm();
   const [authCode, setCode] = useState('');
