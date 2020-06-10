@@ -59,34 +59,43 @@
   border: 1px solid #66e2f5 ;
   background: rgba(31, 65, 145, 0.1) ;
 }
+.ant-input-affix-wrapper{
+  background: rgba(51,102,203,.4);
+  border: none;
+}
 
 // tree
+.ant-tree{
+  color:  #54ACFE;
+  background: none;
+  font-size: 1.2rem;
+}
+.ant-tree-show-line .ant-tree-switcher{
+  color:  #54ACFE;
+  background: none;
+}
 .ant-tree.ant-tree-show-line li span.ant-tree-switcher {
   color:  #54ACFE;
   background: none;
   font-size: 1.4rem;
 }
-.ant-tree.ant-tree-directory > li.ant-tree-treenode-selected > span.ant-tree-switcher, .ant-tree.ant-tree-directory .ant-tree-child-tree > li.ant-tree-treenode-selected > span.ant-tree-switcher{
-  color:#54ACFE ;
-}
-.ant-tree li .ant-tree-node-content-wrapper{
-  color: #ffffff;
-  font-size: 1rem;
-}
-.ant-tree.ant-tree-directory > li.ant-tree-treenode-selected > span.ant-tree-node-content-wrapper::before, .ant-tree.ant-tree-directory .ant-tree-child-tree > li.ant-tree-treenode-selected > span.ant-tree-node-content-wrapper::before {
-   background: none;
-}
-.ant-tree.ant-tree-directory > li span.ant-tree-node-content-wrapper:hover::before, .ant-tree.ant-tree-directory .ant-tree-child-tree > li span.ant-tree-node-content-wrapper:hover::before{
+.ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before, .ant-tree.ant-tree-directory .ant-tree-treenode-selected::before{
   background: none;
+}
+.ant-tree.ant-tree-directory .ant-tree-treenode:hover::before{
+  background: none;
+}
+.ant-tree.ant-tree-directory .ant-tree-treenode-selected .ant-tree-switcher{
+  color:#54ACFE ;
 }
 .ant-tree-node-selected {
   border-bottom: 2px solid #eabe36;
   padding-bottom: 5px;
 }
-.ant-tree.ant-tree-show-line li:not(:last-child)::before{
-  border-left-color:#54ACFE ;
-}
 
+.ant-tree-show-line .ant-tree-indent-unit::before{
+  border-color:#54ACFE ;
+}
 .ant-calendar-range-picker-separator {
   color: #24c9ff;
 }
@@ -95,4 +104,56 @@
 }
 .ant-calendar-picker-icon{
   color: #66e2f5;
+}
+
+// form  hover
+.ant-form-item-has-error .ant-input, .ant-form-item-has-error .ant-input-affix-wrapper, .ant-form-item-has-error .ant-input:hover, .ant-form-item-has-error .ant-input-affix-wrapper:hover{
+  background: rgba(51, 102, 203, 0.4);
+  border-color:transparent;
+}
+.ant-form-item-has-error .ant-input:not([disabled]):hover, .ant-form-item-has-error .ant-input-affix-wrapper:not([disabled]):hover{
+  border-color:transparent;
+  box-shadow: none;
+}
+.ant-form-item-has-error .ant-input:focus, .ant-form-item-has-error .ant-input-affix-wrapper:focus, .ant-form-item-has-error .ant-input-focused, .ant-form-item-has-error .ant-input-affix-wrapper-focused{
+  border-color:transparent;
+  box-shadow: none;
+}
+// modal
+.ant-modal-confirm .ant-modal-body{
+  background: #1f4191;
+}
+.ant-modal .ant-modal-confirm-title{
+  color: #ffffff;
+}
+.ant-btn:hover{
+  background: #3b68d3;
+}
+
+.ant-btn-primary{
+  color: #fff;
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+.ant-btn{
+  background: #3b68d3;
+  border-radius: 2px;
+  border: none;
+  color: #fff;
+}
+// 提示框样式
+.ant-notification {
+  .ant-notification-notice {
+    padding: 13px;
+    background-color: #3075CE;
+    border: 1px solid #4491F6;
+    border-top: 2px solid #F8B551;
+    border-radius: 2px;
+
+    .ant-notification-notice-message,
+    .ant-notification-notice-description,
+    .ant-notification-notice-close {
+      color: #fff;
+    }
+  }
 }

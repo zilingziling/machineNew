@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './video.scss';
 const VideoDistract = ({ refreshPlay, FullScreen }) => {
-  useEffect(() => _infos());
+  useEffect(() => _infos(), []);
   const _infos = () => {
     window.YjFPlayer = {
       onEvent: str => {

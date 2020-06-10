@@ -30,10 +30,10 @@ const errorHandler = error => {
   const { response } = error;
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
-    const { status, url } = response;
+    const { status } = response;
 
     notification.error({
-      message: `请求错误 ${status}: ${url}`,
+      message: `请求错误 ${status}`,
       description: errorText,
     });
   } else if (!response) {
@@ -57,5 +57,30 @@ const request = extend({
     'Content-Type': 'application/json',
   },
 });
-
+request.use(async (ctx, next) => {
+  const { req } = ctx;
+  const { url, options } = req;
+  // 判断是否需要添加前缀，如果是统一添加可通过 prefix、suffix 参数配置
+  if (url !== 'integrated/login') {
+    console.log(ctx.req.options);
+    if (ctx.req.options.method === 'get') {
+      ctx.req.options = {
+        ...options,
+        params: {
+          ...options.params,
+          token: window.localStorage.getItem('token'),
+        },
+      };
+    } else {
+      ctx.req.options = {
+        ...options,
+        data: {
+          ...options.data,
+          token: window.localStorage.getItem('token'),
+        },
+      };
+    }
+  }
+  await next();
+});
 export default request;

@@ -22,7 +22,7 @@ export default {
               path: '/deviceControl',
               name: '设备控制',
               icon: 'deviceIcon',
-              component: './deviceControl/deviceCtrl.js',
+              component: './deviceControl',
             },
             {
               path: '/warning',
@@ -120,10 +120,10 @@ export default {
     ],
   ],
   proxy: {
-    '/baseapi': {
+    '/integrated': {
       target: 'http://172.16.3.104:8103/', //dev
       changeOrigin: true,
-      pathRewrite: { '^/baseapi': '' },
+      pathRewrite: { '': '' },
     },
   },
 };

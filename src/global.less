@@ -109,6 +109,7 @@ li {
   color: #ffffff;
   height: 70vh;
   overflow: auto;
+  margin-top: .5rem;
 }
 
 .mt0{
@@ -130,3 +131,10 @@ li {
 .red{
   color: #FF0000;
 }
+// 输入框自动填充颜色
+input:-webkit-autofill {
+  -webkit-text-fill-color: #66e2f5 !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #66e2f5;
+}
+
