@@ -31,7 +31,10 @@ const errorHandler = error => {
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
     const { status } = response;
-
+    console.log(response);
+    if (response.code === 404) {
+      //   token 过期 重新请求
+    }
     notification.error({
       message: `请求错误 ${status}`,
       description: errorText,
@@ -60,8 +63,7 @@ const request = extend({
 request.use(async (ctx, next) => {
   const { req } = ctx;
   const { url, options } = req;
-  // 判断是否需要添加前缀，如果是统一添加可通过 prefix、suffix 参数配置
-  if (url !== 'integrated/login') {
+  if (url !== '/integrated/login') {
     console.log(ctx.req.options);
     if (ctx.req.options.method === 'get') {
       ctx.req.options = {

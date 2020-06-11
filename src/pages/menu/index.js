@@ -1,12 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tree, Table, Button, Divider } from 'antd';
 import styles from './index.less';
+import { getMenuTree } from '@/service/menu';
+import OpeModal from '@/pages/menu/components/opeModal';
+import { formatTreeData } from '@/utils/func';
 const { DirectoryTree } = Tree;
 const Menu = () => {
+  const [menuTitle, setMTitle] = useState('');
+  const [menuV, setMV] = useState(false);
+  const [treeData, setTreeData] = useState([]);
+  const [selectMenuInfo, setMenuInfo] = useState({});
+  useEffect(() => {
+    getMenu();
+  }, []);
   const onSelect = (keys, event) => {
-    console.log('Trigger Select', keys, event);
+    // 保存所点击的菜单以便回显
+    setMenuInfo({
+      id: event.node.id,
+      title: event.node.title,
+      url: event.node.url,
+      icon: event.node.icon,
+    });
   };
-
+  // 获取下拉菜单
+  const getMenu = () => {
+    getMenuTree().then(r => {
+      if (r.code === 0) {
+        setTreeData(formatTreeData(r.data));
+      }
+    });
+  };
   const onExpand = () => {
     console.log('Trigger Expand');
   };
@@ -27,21 +50,38 @@ const Menu = () => {
       title: '操作',
     },
   ];
-
+  const menuProps = {
+    menuTitle,
+    menuV,
+    setMV,
+    getMenu,
+    selectMenuInfo,
+  };
+  const onClickOpe = type => {
+    if (type === 'add') {
+      setMTitle('新增');
+    } else {
+      setMTitle('编辑');
+    }
+    setMV(true);
+  };
   return (
     <div className="treeWrapper">
+      <OpeModal {...menuProps} />
       <div>
         <div className={styles.ope}>
-          <span className={styles.clicked}>新增</span>
+          <a href="#!" onClick={() => onClickOpe('add')}>
+            新增
+          </a>
           <Divider className={styles.divider} type="vertical" />
-          <span>编辑</span>
+          <a href="#!" onClick={() => onClickOpe('edit')}>
+            编辑
+          </a>
           <Divider className={styles.divider} type="vertical" />
-          <span>删除</span>
+          <a href="#!">删除</a>
         </div>
         <DirectoryTree
-          multiple
           showLine
-          defaultExpandAll
           onSelect={onSelect}
           onExpand={onExpand}
           treeData={treeData}
@@ -58,21 +98,3 @@ const Menu = () => {
 };
 
 export default Menu;
-const treeData = [
-  {
-    title: 'parent 0',
-    key: '0-0',
-    children: [
-      { title: 'leaf 0-0', key: '0-0-0', isLeaf: true },
-      { title: 'leaf 0-1', key: '0-0-1', isLeaf: true },
-    ],
-  },
-  {
-    title: 'parent 1',
-    key: '0-1',
-    children: [
-      { title: 'leaf 1-0', key: '0-1-0', isLeaf: true },
-      { title: 'leaf 1-1', key: '0-1-1', isLeaf: true },
-    ],
-  },
-];

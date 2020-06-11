@@ -59,3 +59,36 @@ export const findPosition = (data, key) => {
     }
   });
 };
+//  格式化树菜单
+export const formatTreeData = res => {
+  let ant = [];
+  res.forEach(e => {
+    if (e.children && e.children.length) {
+      ant.push({
+        title: e.name,
+        value: e.id,
+        parent: e.parent,
+        children: formatTreeData(e.children),
+        id: e.id,
+        key: e.id,
+        icon: e.icon,
+        url: e.url,
+        leaf: false,
+        sort: e.sort,
+      });
+    } else {
+      ant.push({
+        title: e.name,
+        value: e.id,
+        parent: e.parent,
+        id: e.id,
+        key: e.id,
+        leaf: true,
+        icon: e.icon,
+        url: e.url,
+        sort: e.sort,
+      });
+    }
+  });
+  return ant;
+};
