@@ -57,14 +57,13 @@ const request = extend({
   prefix: '',
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded',
   },
 });
 request.use(async (ctx, next) => {
   const { req } = ctx;
   const { url, options } = req;
   if (url !== '/integrated/login') {
-    console.log(ctx.req.options);
     if (ctx.req.options.method === 'get') {
       ctx.req.options = {
         ...options,

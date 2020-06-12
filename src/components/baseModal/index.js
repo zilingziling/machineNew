@@ -1,9 +1,20 @@
 import React from 'react';
 import { Modal } from 'antd';
 
-const BaseModal = ({ visible, children, title, onOk, onCancel, okText = '', cancelText = '' }) => {
+const BaseModal = ({
+  visible,
+  children,
+  title,
+  onOk,
+  onCancel,
+  okText = '',
+  cancelText = '',
+  className,
+}) => {
   return (
     <Modal
+      className={className}
+      getContainer={false}
       visible={visible}
       title={title}
       onOk={onOk}

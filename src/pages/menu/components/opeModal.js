@@ -4,22 +4,23 @@ import BaseModal from '@/components/baseModal';
 import { layout } from '@/utils/common';
 import { UploadOutlined } from '@ant-design/icons';
 import { saveTree } from '@/service/menu';
-const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo }) => {
+const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, setMenuInfo }) => {
   const [form] = Form.useForm();
-  const [icon, setIcon] = useState('');
   const onClose = () => {
     setMV(false);
-    form.resetFields();
   };
   useEffect(() => {
-    if (Object.keys(selectMenuInfo).length) {
+    if (Object.keys(selectMenuInfo).length && menuTitle.includes('编辑')) {
       form.setFieldsValue({
         name: selectMenuInfo.title,
         url: selectMenuInfo.url,
         icon: selectMenuInfo.icon,
+        sort: selectMenuInfo.sort,
       });
+    } else {
+      form.resetFields();
     }
-  }, []);
+  }, [selectMenuInfo, menuTitle]);
   const onUpload = e => {
     if (e.file.status === 'done') {
       if (e.file.response.code === 0) {
@@ -41,7 +42,8 @@ const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo }) => {
       .validateFields()
       .then(value => {
         if (value) {
-          saveTree(value).then(r => {
+          const params = menuTitle.includes('编辑') ? { ...value, id: selectMenuInfo.id } : value;
+          saveTree(params).then(r => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
@@ -58,11 +60,12 @@ const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo }) => {
       })
       .catch(() => {});
   };
+
   return (
     <BaseModal title={menuTitle} onCancel={onClose} onOk={onOk} visible={menuV}>
       <Form form={form} {...layout}>
-        <Form.Item name="account" label="上级菜单">
-          <TreeSelect></TreeSelect>
+        <Form.Item name="parent.id" label="上级菜单">
+          <TreeSelect treeData={treeData} />
         </Form.Item>
         <Form.Item
           name="name"

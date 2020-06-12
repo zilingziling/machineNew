@@ -12,3 +12,12 @@ export const tailLayout = {
     span: 16,
   },
 };
+export const roleLayout = {
+  labelCol: {
+    span: 6,
+  },
+  wrapperCol: {
+    span: 16,
+  },
+};
+export const myLocale = { emptyText: '暂无数据' };

@@ -1,3 +1,5 @@
+import React from 'react';
+
 export function showTotal(totalPage, total) {
   return (
     <p className="white">
