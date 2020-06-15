@@ -1,31 +1,95 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BaseModal from '@/components/baseModal';
 import styles from '../role.less';
-import { Button, Divider, Form, Input, Tree, TreeSelect, Upload } from 'antd';
+import { Button, Divider, Form, Input, notification, Tree, TreeSelect, Upload } from 'antd';
 import { layout, roleLayout } from '@/utils/common';
-import { UploadOutlined } from '@ant-design/icons';
-const RoleModal = ({ roleTitle, roleV, setRoleV }) => {
+import { addRole, getRoleTree } from '@/service/role';
+import { formatOpeTree } from '@/utils/func';
+const RoleModal = ({ roleTitle, roleV, setRoleV, getTable, editInfo }) => {
   const [form] = Form.useForm();
+  const [roleTree, setRoleTree] = useState([]);
+  const [selectRole, setSelectRole] = useState([]);
+  const [opeIds, setOpeIds] = useState([]);
+  useEffect(() => {
+    getRoleTree().then(r => {
+      if (r.code === 0) {
+        setRoleTree(formatOpeTree(r.data));
+      }
+    });
+  }, []);
   const roleCancel = () => {
     setRoleV(false);
+    form.resetFields();
   };
-  const onSelect = (selectedKeys, info) => {
-    console.log('selected', selectedKeys, info);
-  };
-
   const onCheck = (checkedKeys, info) => {
-    console.log('onCheck', checkedKeys, info);
+    console.log(checkedKeys);
+    setSelectRole(checkedKeys);
+    const ids = info.checkedNodes.filter(node => !node.route).map(item => item.id);
+    setOpeIds(ids);
+  };
+  useEffect(() => {
+    console.log(editInfo);
+    if (Object.keys(editInfo).length) {
+      form.setFieldsValue({
+        name: editInfo.name,
+        code: editInfo.code,
+      });
+      setSelectRole(
+        editInfo.operationId ? editInfo.operationId.split(',').map(num => parseInt(num)) : [],
+      );
+    } else {
+      form.setFieldsValue({
+        name: '',
+        code: '',
+      });
+      setSelectRole([]);
+    }
+  }, [editInfo]);
+  const onAdd = () => {
+    form
+      .validateFields()
+      .then(value => {
+        if (value) {
+          let params = value;
+          opeIds.forEach((v, index) => {
+            params[`operation[${index}].id`] = v;
+          });
+          if (roleTitle.includes('编辑')) {
+            params.id = editInfo.id;
+          }
+          addRole(params).then(r => {
+            if (r.code === 0) {
+              notification.success({
+                message: r.msg,
+              });
+              getTable();
+              roleCancel();
+            } else {
+              notification.error({
+                message: r.msg,
+              });
+            }
+          });
+        }
+      })
+      .catch(() => {});
   };
   return (
-    <BaseModal title={roleTitle} visible={roleV} onCancel={roleCancel} className={styles.modal}>
+    <BaseModal
+      onOk={onAdd}
+      title={roleTitle}
+      visible={roleV}
+      onCancel={roleCancel}
+      className={styles.modal}
+    >
       <div className={styles.roleModal}>
         <div className={styles.auth}>
           <h2>角色授权</h2>
           <Tree
+            checkedKeys={selectRole}
             checkable
-            onSelect={onSelect}
             onCheck={onCheck}
-            treeData={treeData}
+            treeData={roleTree}
             className="mt1"
           />
         </div>
@@ -41,7 +105,7 @@ const RoleModal = ({ roleTitle, roleV, setRoleV }) => {
               <Input />
             </Form.Item>
             <Form.Item
-              name="sort"
+              name="code"
               label="角色代码"
               rules={[{ required: true, message: '请输入角色代码！' }]}
             >
@@ -54,31 +118,3 @@ const RoleModal = ({ roleTitle, roleV, setRoleV }) => {
   );
 };
 export default RoleModal;
-const treeData = [
-  {
-    title: 'parent 1',
-    key: '0-0',
-    children: [
-      {
-        title: 'parent 1-0',
-        key: '0-0-0',
-
-        children: [
-          {
-            title: 'leaf',
-            key: '0-0-0-0',
-          },
-          {
-            title: 'leaf',
-            key: '0-0-0-1',
-          },
-        ],
-      },
-      {
-        title: 'parent 1-1',
-        key: '0-0-1',
-        children: [{ title: <span style={{ color: '#1890ff' }}>sss</span>, key: '0-0-1-0' }],
-      },
-    ],
-  },
-];

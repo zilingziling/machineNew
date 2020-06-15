@@ -1,4 +1,5 @@
 import React from 'react';
+import { Divider } from 'antd';
 
 export function showTotal(totalPage, total) {
   return (
@@ -93,4 +94,17 @@ export const formatTreeData = res => {
     }
   });
   return ant;
+};
+// 格式化操作菜单
+export const formatOpeTree = data => {
+  return data.map(v => {
+    return {
+      title: v.name,
+      id: v.id,
+      key: v.id,
+      route: v.route,
+      type: v.type,
+      children: v.children ? formatOpeTree(v.children) : [],
+    };
+  });
 };
