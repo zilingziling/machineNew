@@ -12,6 +12,7 @@
     "@ant-design/icons": "^4.2.1",
     "antd": "^4.0.0",
     "dva": "^2.6.0-beta.6",
+    "eslint-plugin-react-hooks": "^4.0.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "spark-md5": "^3.0.1",
@@ -28,8 +29,8 @@
     "husky": "^0.14.3",
     "lint-staged": "^7.2.2",
     "react-test-renderer": "^16.7.0",
-    "umi": "^2.7.7",
-    "umi-plugin-react": "^1.8.4"
+    "umi": "^3",
+    "@umijs/preset-react": "^1"
   },
   "lint-staged": {
     "*.{js,jsx}": []

@@ -4,7 +4,8 @@ import BaseModal from '@/components/baseModal';
 import { layout } from '@/utils/common';
 import { UploadOutlined } from '@ant-design/icons';
 import { saveTree } from '@/service/menu';
-const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, setMenuInfo }) => {
+import { connect } from 'dva';
+const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, dispatch }) => {
   const [form] = Form.useForm();
   const onClose = () => {
     setMV(false);
@@ -21,7 +22,7 @@ const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, 
       form.resetFields();
     }
   }, [selectMenuInfo, menuTitle]);
-  const onUpload = e => {
+  const onUpload = (e) => {
     if (e.file.status === 'done') {
       if (e.file.response.code === 0) {
         form.setFieldsValue({
@@ -40,16 +41,20 @@ const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, 
   const onOk = () => {
     form
       .validateFields()
-      .then(value => {
+      .then((value) => {
         if (value) {
           const params = menuTitle.includes('编辑') ? { ...value, id: selectMenuInfo.id } : value;
-          saveTree(params).then(r => {
+          saveTree(params).then((r) => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
               });
               getMenu();
               onClose();
+              //  操作菜单后
+              dispatch({
+                type: 'global/getAuth',
+              });
             } else {
               notification.error({
                 message: r.msg,
@@ -110,4 +115,6 @@ const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, 
     </BaseModal>
   );
 };
-export default OpeModal;
+export default connect(({ global }) => ({
+  moreMenu: global.moreMenu,
+}))(OpeModal);

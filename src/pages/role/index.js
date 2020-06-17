@@ -6,24 +6,29 @@ import { delRole, getRoleList } from '@/service/role';
 import { showTotal, tableOpe } from '@/utils/func';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { delOperation } from '@/service/menu';
+import AuthComponent from '@/components/authButton';
+const AuthButton = AuthComponent(Button);
+
 const Role = () => {
   // table列表 区域
   const [tableList, setTableList] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [current, setCurrent] = useState(1);
   const [total, setTotal] = useState('');
+  const [totalPage, setTotalPage] = useState('');
   // search
   const [keyword, setKeyword] = useState('');
   useEffect(() => getTable(), [pageSize, current, keyword]);
-  const onTableChange = p => {
+  const onTableChange = (p) => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getRoleList({ page: current, limit: pageSize, keyword }).then(r => {
+    getRoleList({ page: current, limit: pageSize, keyword }).then((r) => {
       if (r.code === 0) {
         setTableList(r.data.list);
-        setTotal(r.data.totalPage);
+        setTotal(r.data.totalCount);
+        setTotalPage(r.data.totalPage);
       }
     });
   };
@@ -41,7 +46,7 @@ const Role = () => {
     pageSize,
     current: current,
     showQuickJumper: true,
-    showTotal: () => showTotal(total, total),
+    showTotal: () => showTotal(totalPage, total),
   };
   const column = [
     {
@@ -97,7 +102,7 @@ const Role = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delRole({ id: record.id }).then(r => {
+        delRole({ id: record.id }).then((r) => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
@@ -123,7 +128,7 @@ const Role = () => {
         <Input
           className="searchInput mr1"
           value={keyword}
-          onChange={e => setKeyword(e.target.value)}
+          onChange={(e) => setKeyword(e.target.value)}
           onPressEnter={onSearch}
         />
         <Button className="shadowBtn mr1" onClick={onSearch}>
@@ -134,17 +139,17 @@ const Role = () => {
         </Button>
       </div>
       <br />
-      <Button className="shadowBtn" onClick={() => onClickRole('add')}>
+      <AuthButton className="shadowBtn" authName="add" onClick={() => onClickRole('add')}>
         新增
-      </Button>
+      </AuthButton>
       <Table
         rowKey="id"
         pagination={pagination}
         onChange={onTableChange}
         dataSource={tableList}
+        locale={myLocale}
         className="normalTable"
         columns={column}
-        locale={myLocale}
       />
     </div>
   );

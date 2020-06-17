@@ -4,7 +4,7 @@ import '@ant-design/compatible/assets/index.css';
 import { Button, Input, Form, notification } from 'antd';
 import { login } from '@/service/login';
 import SparkMd5 from 'spark-md5';
-import router from 'umi/router';
+import { history } from 'umi';
 const Login = ({}) => {
   const [form] = Form.useForm();
   const [authCode, setCode] = useState('');
@@ -20,13 +20,13 @@ const Login = ({}) => {
   const onLogin = () => {
     form
       .validateFields()
-      .then(value => {
+      .then((value) => {
         if (value) {
           let params = value;
           params.password = SparkMd5.hash(params.password);
-          login(params).then(r => {
+          login(params).then((r) => {
             if (r.code === 0) {
-              router.push('/');
+              history.push('/');
               window.localStorage.setItem('token', r.data.token);
               window.localStorage.setItem('account', params.account);
               setTimeout(() => {
@@ -44,7 +44,7 @@ const Login = ({}) => {
           });
         }
       })
-      .catch(error => {});
+      .catch((error) => {});
   };
   return (
     <div className={styles.loginWrapper}>

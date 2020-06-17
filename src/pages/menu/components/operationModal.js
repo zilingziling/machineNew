@@ -5,6 +5,8 @@ import { layout } from '@/utils/common';
 import { UploadOutlined } from '@ant-design/icons';
 import { getMenuCode, saveOperation } from '@/service/menu';
 import { formatTreeData } from '@/utils/func';
+import OpeModal from '@/pages/menu/components/opeModal';
+import { connect } from 'dva';
 const OperationModal = ({
   opeTitle,
   opeV,
@@ -13,16 +15,18 @@ const OperationModal = ({
   getOperationList,
   editInfo,
   setEditInfo,
+  dispatch,
 }) => {
   const [form] = Form.useForm();
   const [menuCode, setMenuCode] = useState([]);
+
   const opeCancel = () => {
     setOpeV(false);
     setEditInfo({});
     form.resetFields();
   };
   useEffect(() => {
-    getMenuCode().then(r => {
+    getMenuCode().then((r) => {
       if (r.code === 0) {
         setMenuCode(formatTreeData(r.data));
       }
@@ -43,18 +47,22 @@ const OperationModal = ({
   const opeOk = () => {
     form
       .validateFields()
-      .then(value => {
+      .then((value) => {
         if (value) {
           const params = opeTitle.includes('编辑')
             ? { ...value, 'menu.id': selectMenuInfo.id, id: editInfo.id }
             : { ...value, 'menu.id': selectMenuInfo.id };
-          saveOperation(params).then(r => {
+          saveOperation(params).then((r) => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
               });
               getOperationList();
               opeCancel();
+              //  操作菜单后
+              dispatch({
+                type: 'global/getAuth',
+              });
             } else {
               notification.error({
                 message: r.msg,
@@ -99,4 +107,6 @@ const OperationModal = ({
     </BaseModal>
   );
 };
-export default OperationModal;
+export default connect(({ global }) => ({
+  moreMenu: global.moreMenu,
+}))(OperationModal);

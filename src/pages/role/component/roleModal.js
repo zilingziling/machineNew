@@ -11,7 +11,7 @@ const RoleModal = ({ roleTitle, roleV, setRoleV, getTable, editInfo }) => {
   const [selectRole, setSelectRole] = useState([]);
   const [opeIds, setOpeIds] = useState([]);
   useEffect(() => {
-    getRoleTree().then(r => {
+    getRoleTree().then((r) => {
       if (r.code === 0) {
         setRoleTree(formatOpeTree(r.data));
       }
@@ -24,18 +24,17 @@ const RoleModal = ({ roleTitle, roleV, setRoleV, getTable, editInfo }) => {
   const onCheck = (checkedKeys, info) => {
     console.log(checkedKeys);
     setSelectRole(checkedKeys);
-    const ids = info.checkedNodes.filter(node => !node.route).map(item => item.id);
+    const ids = info.checkedNodes.filter((node) => !node.route).map((item) => item.id);
     setOpeIds(ids);
   };
   useEffect(() => {
-    console.log(editInfo);
     if (Object.keys(editInfo).length) {
       form.setFieldsValue({
         name: editInfo.name,
         code: editInfo.code,
       });
       setSelectRole(
-        editInfo.operationId ? editInfo.operationId.split(',').map(num => parseInt(num)) : [],
+        editInfo.operationId ? editInfo.operationId.split(',').map((num) => parseInt(num)) : [],
       );
     } else {
       form.setFieldsValue({
@@ -48,7 +47,7 @@ const RoleModal = ({ roleTitle, roleV, setRoleV, getTable, editInfo }) => {
   const onAdd = () => {
     form
       .validateFields()
-      .then(value => {
+      .then((value) => {
         if (value) {
           let params = value;
           opeIds.forEach((v, index) => {
@@ -57,7 +56,7 @@ const RoleModal = ({ roleTitle, roleV, setRoleV, getTable, editInfo }) => {
           if (roleTitle.includes('编辑')) {
             params.id = editInfo.id;
           }
-          addRole(params).then(r => {
+          addRole(params).then((r) => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,

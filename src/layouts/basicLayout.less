@@ -11,9 +11,10 @@
     top: 0;
     z-index: 10;
     background: #1757a0;
+    height: 96px;
     .headerTop{
       background: rgba(52, 59, 73, 0.41);
-      height: 3rem;
+      height: 48px;
       border-bottom: 1px solid #29d1d1;
       display: flex;
       justify-content: space-between;
@@ -57,18 +58,18 @@
     }
     .menus{
       background: rgba(52, 59, 73, 0.41);
-      height: 3rem;
+      height: 48px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: space-around;
       box-sizing: border-box;
-      padding:0 0 0 2rem;
       .nav{
         border-bottom: 2px solid transparent;
-        height: 3rem;
+        height: 48px;
         display: flex;
         flex-direction: row;
         align-items: center;
+        cursor: pointer;
         img{
           margin-right: .5rem;
         }
@@ -76,6 +77,7 @@
           font-weight: 400;
           color: white;
           font-size: 0.8rem;
+          user-select: none;
         }
       }
       .dropdown{
@@ -84,44 +86,26 @@
         justify-content: center;
 
       }
-      .overlay{
-        width: 10rem;
-        height: 3rem;
-        line-height: 3rem;
-        cursor: pointer;
-        top: 104px;
-      }
+
       .bg{
         background: rgba(36, 175, 255, 1);
       }
     }
   }
-  .content{
-    width: 100vw;
-    min-height: calc(100% - 6rem);
-  }
-}
-.dropMenu{
-  border-radius: 0;
-  top: -4px;
-  padding: 0;
-  overflow: auto;
-  background: #102442;
-  border: 1px solid rgb(24,144,255);
-  width: 10rem;
-  .menuItem{
-    height: 2.5rem;
-    background: rgba(16, 36, 66, 1);
-    border-bottom: 1px solid rgba(54, 61, 71, 1);
-    display: flex;
-    align-items: center;
-    &:hover{
-      background: rgba(36, 175, 255, 1);
-    }
-    .link {
-      color: #fff;
-      padding-left: 2.2rem;
 
+}
+.side{
+  .sideLink{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    height: 3.6rem;
+    color: #ffffff;
+    border-bottom: 1px solid #004986;
+    cursor: pointer;
+    &:hover{
+      background: #35429a;
     }
   }
 }

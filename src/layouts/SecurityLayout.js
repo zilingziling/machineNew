@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PageLoading from '@/components/pageLoading/pageLoading';
-import Redirect from 'umi/redirect';
-const SecurityLayout = props => {
+import { Redirect } from 'umi';
+const SecurityLayout = (props) => {
   const [isReady, setReady] = useState(false);
   useEffect(() => setReady(true), []);
   const token = window.localStorage.getItem('token');

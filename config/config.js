@@ -1,6 +1,5 @@
 // ref: https://umijs.org/config/
 export default {
-  treeShaking: true,
   routes: [
     {
       path: '/login',
@@ -39,6 +38,7 @@ export default {
               path: '/more',
               name: '更多功能',
               icon: 'more',
+              component: '../layouts/normalLayout.js',
               routes: [
                 {
                   path: '/more/role',
@@ -96,29 +96,30 @@ export default {
       component: './404.js',
     },
   ],
-  plugins: [
-    // ref: https://umijs.org/plugin/umi-plugin-react.html
-    [
-      'umi-plugin-react',
-      {
-        antd: true,
-        dva: true,
-        dynamicImport: false,
-        title: 'machineNew',
-        dll: false,
-
-        routes: {
-          exclude: [
-            /models\//,
-            /services\//,
-            /model\.(t|j)sx?$/,
-            /service\.(t|j)sx?$/,
-            /components\//,
-          ],
-        },
-      },
-    ],
-  ],
+  antd: {},
+  dva: {},
+  dynamicImport: false,
+  title: '弈简运维管控平台',
+  dll: false,
+  favicon: '/favicon.png',
+  locale: {
+    default: 'zh-CN', // default zh-CN
+  },
+  theme: {
+    '@primary-color': '#2D6BB4', // 全局主色
+    '@link-color': '#1890ff', // 链接色
+    '@success-color': '#52c41a', // 成功色
+    '@warning-color': '#faad14', // 警告色
+    '@error-color': '#f5222d', // 错误色
+    '@font-size-base': '14px', // 主字号
+    '@heading-color': 'rgba(0, 0, 0, 0.85)', // 标题色
+    '@text-color': 'rgba(0, 0, 0, 0.65)', // 主文本色
+    '@text-color-secondary': 'rgba(0, 0, 0, 0.45)', // 次文本色
+    '@disabled-color': 'rgba(0, 0, 0, 0.25)', // 失效色
+    '@border-radius-base': '4px', // 组件/浮层圆角
+    '@border-color-base': '#d9d9d9', // 边框色
+    '@box-shadow-base': '0 2px 8px rgba(0, 0, 0, 0.15)', // 浮层阴影
+  },
   proxy: {
     '/integrated': {
       target: 'http://172.16.3.104:8103/', //dev

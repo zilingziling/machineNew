@@ -4,6 +4,7 @@
  */
 import { extend } from 'umi-request';
 import { notification } from 'antd';
+import { history } from 'umi';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -26,15 +27,13 @@ const codeMessage = {
 /**
  * 异常处理程序
  */
-const errorHandler = error => {
+const errorHandler = (error) => {
   const { response } = error;
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
     const { status } = response;
     console.log(response);
-    if (response.code === 404) {
-      //   token 过期 重新请求
-    }
+
     notification.error({
       message: `请求错误 ${status}`,
       description: errorText,
@@ -59,6 +58,18 @@ const request = extend({
   headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
   },
+});
+request.interceptors.response.use(async (response) => {
+  const data = await response.clone().json();
+  if (data && data.code === 404) {
+    notification.info({
+      message: '登录信息过期，请重新登录！',
+      key: 404,
+    });
+    window.localStorage.clear();
+    history.push('/login');
+  }
+  return response;
 });
 request.use(async (ctx, next) => {
   const { req } = ctx;
