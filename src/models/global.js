@@ -25,7 +25,6 @@ export default {
       if (payload.length) {
         menuArr = payload[0].children.filter((item) => item.route === '/more')[0].children || [];
       }
-      console.log(payload);
       return {
         ...state,
         auth: payload,

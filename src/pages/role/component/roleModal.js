@@ -19,7 +19,6 @@ const RoleModal = ({ roleTitle, roleV, setRoleV, getTable, editInfo }) => {
   }, []);
   const roleCancel = () => {
     setRoleV(false);
-    form.resetFields();
   };
   const onCheck = (checkedKeys, info) => {
     console.log(checkedKeys);

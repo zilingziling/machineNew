@@ -9,7 +9,6 @@ const UserModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, dispatch
   const [form] = Form.useForm();
   const onModalCancel = () => {
     setModalV(false);
-    form.resetFields();
   };
   //  编辑回显
   useEffect(() => {

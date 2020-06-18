@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Divider, Input, Modal, notification, Table } from 'antd';
+import React, { Component, useEffect, useReducer, useState } from 'react';
+import { Button, Divider, Form, Input, Modal, notification, Select, Table } from 'antd';
+import A_e_func from './components/a_e_func';
+import { delFunc, getFuncList, getTypes } from '@/service/device';
 import { showTotal } from '@/utils/func';
-import { myLocale } from '@/utils/common';
-import { delUser, getUserList, resetPwd } from '@/service/userManage';
-import UserModal from '@/pages/userManage/userModal';
-import ChangePwd from '@/pages/userManage/changePwd';
 import { QuestionCircleFilled } from '@ant-design/icons';
-const UserManage = () => {
+import { myLocale } from '@/utils/common';
+const DeviceFunc = () => {
   // table列表 区域
   const [tableList, setTableList] = useState([]);
   const [pageSize, setPageSize] = useState(10);
@@ -15,13 +14,14 @@ const UserManage = () => {
   const [totalPage, setTotalPage] = useState('');
   // search
   const [keyword, setKeyword] = useState('');
-  useEffect(() => getTable(), [pageSize, current, keyword]);
+  const [typeId, setTypeId] = useState('');
+  useEffect(() => getTable(), [pageSize, current, keyword, typeId]);
   const onTableChange = (p) => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getUserList({ page: current, limit: pageSize, keyword }).then((r) => {
+    getFuncList({ page: current, limit: pageSize, keyword, typeId }).then((r) => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -36,6 +36,7 @@ const UserManage = () => {
   const onReset = () => {
     setCurrent(1);
     setKeyword('');
+    setTypeId('');
   };
   const pagination = {
     total,
@@ -46,39 +47,33 @@ const UserManage = () => {
   };
   const column = [
     {
-      title: '账号',
-      dataIndex: 'account',
+      title: '按键名称',
+      dataIndex: 'name',
     },
     {
-      title: '所属学校',
-      dataIndex: 'school',
+      title: '控制命令',
+      dataIndex: 'command',
     },
     {
-      title: '联系人',
-      dataIndex: 'userName',
+      title: '设备类型',
+      dataIndex: 'type',
     },
     {
-      title: '联系电话',
-      dataIndex: 'phone',
+      title: '控制页显示',
+      dataIndex: 'isShow',
+      render: (text) => (text === 1 ? '显示' : '不显示'),
     },
     {
-      title: '状态',
-      dataIndex: 'status',
+      title: '排序',
+      dataIndex: 'sort',
     },
+
     {
       title: '操作',
       render: (text, record) => (
         <>
           <a href="#!" className="opeA" onClick={() => onClickOperation('edit', record)}>
             编辑
-          </a>
-          <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickChange(record)}>
-            修改密码
-          </a>
-          <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickResetPwd(record)}>
-            重置密码
           </a>
           <Divider type="vertical" />
           <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
@@ -88,59 +83,57 @@ const UserManage = () => {
       ),
     },
   ];
-  // 操作区
-  const [selectUser, setSelectUser] = useState('');
   // 弹窗区域
   const [modalTitle, setModalTitle] = useState('');
   const [modalV, setModalV] = useState(false);
   const [editInfo, setEditInfo] = useState({});
+
+  // 图片上传
+  const [tempImg, setTempImg] = useState('');
   const modalProps = {
     modalTitle,
     modalV,
     setModalV,
     getTable,
     editInfo,
-    selectUser,
+    typeId,
+    tempImg,
+    setTempImg,
   };
   const onClickOperation = (type, record) => {
     if (type === 'add') {
+      if (!typeId) {
+        notification.info({
+          message: '请先选择设备类型！',
+        });
+        return;
+      }
       setEditInfo({});
       setModalTitle('新增');
+      setModalV(true);
     } else {
       setModalTitle('编辑');
       setEditInfo(record);
-      setSelectUser(record.id);
+      setModalV(true);
     }
-    setModalV(true);
+    setTempImg('');
   };
-  // 修改密码
-  const [pwdV, setPwdV] = useState(false);
-  const [userId, setUserId] = useState('');
-  const pwdProps = {
-    pwdV,
-    setPwdV,
-    getTable,
-    userId,
-  };
-  const onClickChange = (record) => {
-    setUserId(record.id);
-    setPwdV(true);
-  };
-  // 重置和删除
+  // 删除
   const { confirm } = Modal;
   function onClickDel(record) {
     confirm({
-      title: `确认删除${record.account || ''} 吗？`,
+      title: `确认删除${record.name} 吗？`,
       okText: '确定',
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delUser({ id: record.id }).then((r) => {
+        delFunc({ id: record.id }).then((r) => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
+            setEditInfo({});
           } else {
             notification.error({
               message: r.msg,
@@ -151,40 +144,37 @@ const UserManage = () => {
       onCancel() {},
     });
   }
-  function onClickResetPwd(record) {
-    confirm({
-      title: '确认重置密码？',
-      okText: '确定',
-      cancelText: '取消',
-      icon: <QuestionCircleFilled />,
-      onOk() {
-        resetPwd({ id: record.id }).then((r) => {
-          if (r.code === 0) {
-            notification.success({
-              message: r.msg,
-            });
-            getTable();
-          } else {
-            notification.error({
-              message: r.msg,
-            });
-          }
-        });
-      },
-      onCancel() {},
+  // 获取设备类型列表
+  const [types, setType] = useState([]);
+  useEffect(() => {
+    getTypes().then((r) => {
+      if (r.code === 0) {
+        setType(r.data);
+      }
     });
-  }
+  }, []);
   return (
     <div className="normalWrap">
-      <UserModal {...modalProps} />
-      <ChangePwd {...pwdProps} />
+      <A_e_func {...modalProps} />
       <div className="searchWrapper">
-        <span>账号名称：</span>
+        <span>设备类型：</span>
+        <Select
+          value={typeId}
+          onChange={(e) => setTypeId(e)}
+          style={{ width: 200 }}
+          className="mr1"
+        >
+          {types.map((type) => (
+            <Select.Option value={type.id} key={type.id}>
+              {type.name}
+            </Select.Option>
+          ))}
+        </Select>
         <Input
-          className="searchInput mr1"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onPressEnter={onSearch}
+          className="searchInput mr1"
         />
         <Button className="shadowBtn mr1" onClick={onSearch}>
           搜索
@@ -209,4 +199,5 @@ const UserManage = () => {
     </div>
   );
 };
-export default UserManage;
+
+export default DeviceFunc;

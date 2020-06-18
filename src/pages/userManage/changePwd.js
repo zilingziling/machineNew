@@ -9,7 +9,6 @@ const ChangePwd = ({ pwdV, setPwdV, getTable, userId }) => {
   const [form] = Form.useForm();
   const onModalCancel = () => {
     setPwdV(false);
-    form.resetFields();
   };
 
   const onModalOk = () => {

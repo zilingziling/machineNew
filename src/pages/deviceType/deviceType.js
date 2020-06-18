@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Divider, Input, Modal, notification, Table } from 'antd';
+import React, { Component, useEffect, useReducer, useState } from 'react';
+import { Button, Divider, Input, Modal, notification, Select, Table } from 'antd';
+import A_e_modal from './components/A-E-modal';
+import { delType, getDtypeList, getTypes } from '@/service/device';
 import { showTotal } from '@/utils/func';
-import { myLocale } from '@/utils/common';
-import { delUser, getUserList, resetPwd } from '@/service/userManage';
-import UserModal from '@/pages/userManage/userModal';
-import ChangePwd from '@/pages/userManage/changePwd';
 import { QuestionCircleFilled } from '@ant-design/icons';
-const UserManage = () => {
+import { myLocale } from '@/utils/common';
+const DeviceType = () => {
   // table列表 区域
   const [tableList, setTableList] = useState([]);
   const [pageSize, setPageSize] = useState(10);
@@ -21,7 +20,7 @@ const UserManage = () => {
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getUserList({ page: current, limit: pageSize, keyword }).then((r) => {
+    getDtypeList({ page: current, limit: pageSize, keyword }).then((r) => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -46,24 +45,21 @@ const UserManage = () => {
   };
   const column = [
     {
-      title: '账号',
-      dataIndex: 'account',
+      title: '设备类型',
+      dataIndex: 'name',
     },
     {
-      title: '所属学校',
-      dataIndex: 'school',
+      title: '排序',
+      dataIndex: 'sort',
     },
     {
-      title: '联系人',
-      dataIndex: 'userName',
+      title: '控制页显示',
+      dataIndex: 'isShow',
+      render: (text) => (text === 1 ? '显示' : '不显示'),
     },
     {
-      title: '联系电话',
-      dataIndex: 'phone',
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
+      title: '类型编码',
+      dataIndex: 'code',
     },
     {
       title: '操作',
@@ -73,14 +69,6 @@ const UserManage = () => {
             编辑
           </a>
           <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickChange(record)}>
-            修改密码
-          </a>
-          <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickResetPwd(record)}>
-            重置密码
-          </a>
-          <Divider type="vertical" />
           <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
             删除
           </a>
@@ -88,19 +76,21 @@ const UserManage = () => {
       ),
     },
   ];
-  // 操作区
-  const [selectUser, setSelectUser] = useState('');
   // 弹窗区域
   const [modalTitle, setModalTitle] = useState('');
   const [modalV, setModalV] = useState(false);
   const [editInfo, setEditInfo] = useState({});
+  // 图片上传
+  const [tempImg, setTempImg] = useState('');
+
   const modalProps = {
     modalTitle,
     modalV,
     setModalV,
     getTable,
     editInfo,
-    selectUser,
+    tempImg,
+    setTempImg,
   };
   const onClickOperation = (type, record) => {
     if (type === 'add') {
@@ -109,38 +99,26 @@ const UserManage = () => {
     } else {
       setModalTitle('编辑');
       setEditInfo(record);
-      setSelectUser(record.id);
     }
+    setTempImg('');
     setModalV(true);
   };
-  // 修改密码
-  const [pwdV, setPwdV] = useState(false);
-  const [userId, setUserId] = useState('');
-  const pwdProps = {
-    pwdV,
-    setPwdV,
-    getTable,
-    userId,
-  };
-  const onClickChange = (record) => {
-    setUserId(record.id);
-    setPwdV(true);
-  };
-  // 重置和删除
+  // 删除
   const { confirm } = Modal;
   function onClickDel(record) {
     confirm({
-      title: `确认删除${record.account || ''} 吗？`,
+      title: `确认删除${record.name} 吗？`,
       okText: '确定',
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delUser({ id: record.id }).then((r) => {
+        delType({ id: record.id }).then((r) => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
+            setEditInfo({});
           } else {
             notification.error({
               message: r.msg,
@@ -151,40 +129,17 @@ const UserManage = () => {
       onCancel() {},
     });
   }
-  function onClickResetPwd(record) {
-    confirm({
-      title: '确认重置密码？',
-      okText: '确定',
-      cancelText: '取消',
-      icon: <QuestionCircleFilled />,
-      onOk() {
-        resetPwd({ id: record.id }).then((r) => {
-          if (r.code === 0) {
-            notification.success({
-              message: r.msg,
-            });
-            getTable();
-          } else {
-            notification.error({
-              message: r.msg,
-            });
-          }
-        });
-      },
-      onCancel() {},
-    });
-  }
+
   return (
     <div className="normalWrap">
-      <UserModal {...modalProps} />
-      <ChangePwd {...pwdProps} />
+      <A_e_modal {...modalProps} />
       <div className="searchWrapper">
-        <span>账号名称：</span>
+        <span>设备类型：</span>
         <Input
-          className="searchInput mr1"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onPressEnter={onSearch}
+          className="searchInput mr1"
         />
         <Button className="shadowBtn mr1" onClick={onSearch}>
           搜索
@@ -209,4 +164,5 @@ const UserManage = () => {
     </div>
   );
 };
-export default UserManage;
+
+export default DeviceType;

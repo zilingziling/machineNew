@@ -80,6 +80,21 @@ export default {
                   name: 'AI升级',
                   component: './updateAI',
                 },
+                {
+                  path: '/more/deviceBrand',
+                  name: '设备品牌',
+                  component: './brand/brand',
+                },
+                {
+                  path: '/more/deviceFunc',
+                  name: '控制命令',
+                  component: './deviceFunc/deviceFunc',
+                },
+                {
+                  path: '/more/deviceType',
+                  name: '设备类型',
+                  component: './deviceType/deviceType',
+                },
               ],
             },
             {

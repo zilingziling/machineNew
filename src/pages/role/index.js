@@ -8,7 +8,6 @@ import { QuestionCircleFilled } from '@ant-design/icons';
 import { delOperation } from '@/service/menu';
 import AuthComponent from '@/components/authButton';
 const AuthButton = AuthComponent(Button);
-
 const Role = () => {
   // table列表 区域
   const [tableList, setTableList] = useState([]);
@@ -34,7 +33,6 @@ const Role = () => {
   };
   // 搜索和重置
   const onSearch = () => {
-    console.log(keyword);
     setCurrent(1);
   };
   const onReset = () => {
@@ -61,13 +59,18 @@ const Role = () => {
       title: '操作',
       render: (text, record) => (
         <>
-          <a href="#!" className="opeA" onClick={() => onClickRole('edit', record)}>
+          <AuthButton
+            href="#!"
+            authName="编辑"
+            className="opeA"
+            onClick={() => onClickRole('edit', record)}
+          >
             编辑
-          </a>
+          </AuthButton>
           <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
+          <AuthButton href="#!" authName="删除" className="opeA" onClick={() => onClickDel(record)}>
             删除
-          </a>
+          </AuthButton>
         </>
       ),
     },
@@ -139,7 +142,7 @@ const Role = () => {
         </Button>
       </div>
       <br />
-      <AuthButton className="shadowBtn" authName="add" onClick={() => onClickRole('add')}>
+      <AuthButton className="shadowBtn" authName="新增" onClick={() => onClickRole('add')}>
         新增
       </AuthButton>
       <Table

@@ -23,7 +23,6 @@ const OperationModal = ({
   const opeCancel = () => {
     setOpeV(false);
     setEditInfo({});
-    form.resetFields();
   };
   useEffect(() => {
     getMenuCode().then((r) => {
