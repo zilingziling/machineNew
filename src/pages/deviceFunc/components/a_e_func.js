@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Radio, Upload, Button, Icon, message, notification } from 'antd';
+import { Form, Input, Radio, Upload, Button, InputNumber, message, notification } from 'antd';
 import { operateFunc } from '@/service/device';
 import BaseModal from '@/components/baseModal';
 import { layout } from '@/utils/common';
@@ -108,7 +108,7 @@ const A_e_func = ({
           </Radio.Group>
         </Form.Item>
         <Form.Item name="sort" label="排序" rules={[{ required: true, message: '请输入排序！' }]}>
-          <Input />
+          <InputNumber min={1} type="number" />
         </Form.Item>
         <Form.Item label="图标">
           {tempImg || editInfo.imageUrl ? (

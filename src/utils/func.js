@@ -20,14 +20,14 @@ export function mobileValidator(rule, value, callback) {
   callback();
 }
 export function getUuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     let r = (Math.random() * 16) | 0,
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
 export const EventUtil = {
-  addHandle: function(element, type, handle) {
+  addHandle: function (element, type, handle) {
     if (element.addEventListener) {
       element.addEventListener(type, handle);
     } else if (element.attachEvent) {
@@ -36,7 +36,7 @@ export const EventUtil = {
       element['on' + type] = handle;
     }
   },
-  removeHandle: function(element, type, handle) {
+  removeHandle: function (element, type, handle) {
     if (element.removeEventListener) {
       element.removeListener(type, handle);
     } else if (element.detachEvent) {
@@ -46,7 +46,7 @@ export const EventUtil = {
     }
   },
 };
-export const uint8Buff2Str = u8array => {
+export const uint8Buff2Str = (u8array) => {
   var str = '';
   for (var i = 0; i < u8array.length; i++) {
     str += String.fromCharCode(u8array[i]);
@@ -54,7 +54,7 @@ export const uint8Buff2Str = u8array => {
   return str;
 };
 export const findPosition = (data, key) => {
-  data.map(item => {
+  data.map((item) => {
     if (item.key === key) {
       console.log(item);
     } else if (item.children) {
@@ -63,17 +63,17 @@ export const findPosition = (data, key) => {
   });
 };
 //  格式化树菜单
-export const formatTreeData = res => {
+export const formatTreeData = (res, uuid = false) => {
   let ant = [];
-  res.forEach(e => {
+  res.forEach((e) => {
     if (e.children && e.children.length) {
       ant.push({
         title: e.name,
         value: e.id,
         parent: e.parent,
-        children: formatTreeData(e.children),
+        children: formatTreeData(e.children, uuid),
         id: e.id,
-        key: e.id,
+        key: uuid ? e.uuid : e.id,
         icon: e.icon,
         url: e.url,
         leaf: false,
@@ -85,7 +85,7 @@ export const formatTreeData = res => {
         value: e.id,
         parent: e.parent,
         id: e.id,
-        key: e.id,
+        key: uuid ? e.uuid : e.id,
         leaf: true,
         icon: e.icon,
         url: e.url,
@@ -96,8 +96,8 @@ export const formatTreeData = res => {
   return ant;
 };
 // 格式化操作菜单
-export const formatOpeTree = data => {
-  return data.map(v => {
+export const formatOpeTree = (data) => {
+  return data.map((v) => {
     return {
       title: v.name,
       id: v.id,

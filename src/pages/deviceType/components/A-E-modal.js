@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Radio, Upload, notification, Button } from 'antd';
+import { Form, Input, Radio, Upload, notification, Button, InputNumber } from 'antd';
 import { operate } from '@/service/device';
 import { layout } from '@/utils/common';
 import BaseModal from '@/components/baseModal';
@@ -97,7 +97,7 @@ const A_e_modal = ({ modalTitle, modalV, setModalV, getTable, editInfo, tempImg,
           </Radio.Group>
         </Form.Item>
         <Form.Item name="sort" label="排序" rules={[{ required: true, message: '请输入排序！' }]}>
-          <Input />
+          <InputNumber min={1} type="number" />
         </Form.Item>
         <Form.Item label="图标">
           {tempImg || editInfo.imageUrl ? (

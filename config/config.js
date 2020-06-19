@@ -95,6 +95,11 @@ export default {
                   name: '设备类型',
                   component: './deviceType/deviceType',
                 },
+                {
+                  path: '/more/deviceConfig',
+                  name: '设备配置',
+                  component: './deviceConfig/deviceConfig',
+                },
               ],
             },
             {

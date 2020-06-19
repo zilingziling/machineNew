@@ -69,3 +69,16 @@ export function delFunc(p) {
     params: p,
   });
 }
+// 设备配置
+export function getDeviceConfig(p) {
+  return request('/integrated/equipment/list', {
+    method: 'get',
+    params: p,
+  });
+}
+export function getDeviceConfigTree(p) {
+  return request('/integrated/equipment/classroomTree', {
+    method: 'get',
+    params: p,
+  });
+}

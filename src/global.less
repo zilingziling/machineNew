@@ -60,6 +60,7 @@ body,
 ::-webkit-scrollbar-button{
   display: none;
 }
+
 body,
 h1,
 h2,
@@ -100,7 +101,6 @@ li {
     overflow-y: scroll;
   }
 
-
   .normalTable{
 
     margin-top: 1rem;
@@ -137,7 +137,6 @@ li {
     justify-content: flex-start;
     align-items: flex-start;
     box-sizing: border-box;
-    padding: 1rem 1rem 0 2rem ;
   }
   .normalTree{
     width: 11.5vw;
@@ -234,7 +233,7 @@ li {
 
   // input
 
-  .ant-input{
+  .ant-input,.ant-input-number{
 
     background: none ;
     color: #66e2f5 ;
@@ -242,7 +241,10 @@ li {
     background: rgba(31, 65, 145, 0.1) ;
 
   }
-
+  .ant-input-number{
+    width: 100%;
+  }
+  // 隐藏增减框
 
   .ant-input-affix-wrapper{
     background: rgba(51,102,203,.4);
@@ -259,6 +261,7 @@ li {
   .ant-tree-show-line .ant-tree-switcher{
     color:  #54ACFE;
     background: none;
+    font-size: 1.4rem;
   }
   .ant-tree.ant-tree-show-line li span.ant-tree-switcher {
     color:  #54ACFE;
@@ -423,7 +426,7 @@ li {
   }
   .ant-tree-title{
     color: #ffffff;
-
+    font-size: 1rem;
   }
   .ant-tree .ant-tree-switcher .ant-tree-switcher-icon, .ant-tree .ant-tree-switcher .ant-select-tree-switcher-icon{
     font-size: 24px;
