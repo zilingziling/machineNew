@@ -5,7 +5,7 @@ import { Link } from 'umi';
 import { Dropdown, Menu, Modal } from 'antd';
 import { history } from 'umi';
 import { QuestionCircleFilled } from '@ant-design/icons';
-import { connect } from 'dva';
+import { connect, router } from 'dva';
 const activeNav = {
   borderBottom: '2px solid rgba(234,190,54,1)',
 };
@@ -50,11 +50,8 @@ const BasicLayout = (props) => {
             } else {
               return (
                 <NavLink
-                  to={
-                    item.route === '/more' && props.moreMenu.length
-                      ? props.moreMenu[0].route
-                      : item.route
-                  }
+                  // to={item.children.length ? item.children[0].route : item.route}
+                  to={item.route}
                   key={index}
                   className={styles.nav}
                   activeStyle={activeNav}

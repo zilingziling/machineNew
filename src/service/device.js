@@ -82,3 +82,33 @@ export function getDeviceConfigTree(p) {
     params: p,
   });
 }
+export function getBrandsTree(p) {
+  return request('/integrated/brand/data', {
+    method: 'get',
+    params: p,
+  });
+}
+export function getCommands(p) {
+  return request('/integrated/equipment/commandData', {
+    method: 'get',
+    params: p,
+  });
+}
+export function addDevice(p) {
+  return request('/integrated/equipment/save', {
+    method: 'get',
+    params: p,
+  });
+}
+export function delDevice(p) {
+  return request('/integrated/equipment/delete', {
+    method: 'get',
+    params: p,
+  });
+}
+export function getDetails(p) {
+  return request('/integrated/equipment/detail', {
+    method: 'get',
+    params: p,
+  });
+}

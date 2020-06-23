@@ -14,13 +14,13 @@ const NormalLayout = (props) => {
   //     type: 'global/getAuth',
   //   });
   // }, []);
-  const { moreMenu } = props;
-
+  const { moreMenu, assetsMenu, route } = props;
+  const menus = route.path === '/more' ? moreMenu : route.path.includes('assets') ? assetsMenu : [];
   return (
     <Layout>
       <Sider>
         <div className={styles.side}>
-          {moreMenu.map((item) => (
+          {menus.map((item) => (
             <NavLink
               activeStyle={navActive}
               className={styles.sideLink}
@@ -30,9 +30,6 @@ const NormalLayout = (props) => {
               {item.name}
             </NavLink>
           ))}
-
-          {/*<Menu.Item key="2">nav 2</Menu.Item>*/}
-          {/*<Menu.Item key="3">nav 3</Menu.Item>*/}
         </div>
       </Sider>
 
@@ -48,4 +45,5 @@ const NormalLayout = (props) => {
 };
 export default connect(({ global }) => ({
   moreMenu: global.moreMenu,
+  assetsMenu: global.assetsMenu,
 }))(NormalLayout);

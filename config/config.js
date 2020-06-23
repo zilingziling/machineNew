@@ -103,6 +103,39 @@ export default {
               ],
             },
             {
+              path: '/assetsManage',
+              name: '资产管理',
+              icon: 'cp',
+              component: '../layouts/normalLayout.js',
+              routes: [
+                {
+                  path: '/assetsManage/repairs',
+                  name: '资产报修',
+                  component: './assetsManage/repairs/repairs',
+                },
+                {
+                  path: '/assetsManage/list',
+                  name: '资产列表',
+                  component: './assetsManage/list/list',
+                },
+                {
+                  path: '/assetsManage/warning',
+                  name: '资产预警',
+                  component: './assetsManage/warning/warning',
+                },
+                {
+                  path: '/assetsManage/dataCount',
+                  name: '数据统计',
+                  component: './assetsManage/dataCount/dataCount',
+                },
+                {
+                  path: '/assetsManage/assetsMore',
+                  name: '更多管理',
+                  component: './assetsManage/dataCount/dataCount',
+                },
+              ],
+            },
+            {
               component: './404.js',
             },
           ],

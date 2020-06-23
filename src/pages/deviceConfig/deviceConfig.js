@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Tree, Table, Button, Input } from 'antd';
-import { getBrandList, getDeviceConfig, getDeviceConfigTree } from '@/service/device';
+import { Tree, Table, Button, Input, notification, Divider, Modal } from 'antd';
+import {
+  del,
+  delDevice,
+  getBrandList,
+  getDetails,
+  getDeviceConfig,
+  getDeviceConfigTree,
+} from '@/service/device';
 import { formatTreeData, showTotal } from '@/utils/func';
 import { myLocale } from '@/utils/common';
 import DeviceConfigModal from '@/pages/deviceConfig/deviceConfigModal';
+import { QuestionCircleFilled } from '@ant-design/icons';
 const { DirectoryTree } = Tree;
 const DeviceConfig = () => {
   // table列表 区域
@@ -86,16 +94,20 @@ const DeviceConfig = () => {
       title: '型号',
       dataIndex: 'equipmentSort',
     },
-    {
-      title: '控制方式',
-      dataIndex: '',
-    },
-    {
-      title: 'IP地址',
-      dataIndex: '',
-    },
+
     {
       title: '操作',
+      render: (text, record) => (
+        <>
+          <a href="#!" className="opeA" onClick={() => onClickOperation('edit', record)}>
+            编辑
+          </a>
+          <Divider type="vertical" />
+          <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
+            删除
+          </a>
+        </>
+      ),
     },
   ];
   // 弹窗区域
@@ -108,17 +120,61 @@ const DeviceConfig = () => {
     setModalV,
     getTable,
     editInfo,
+    classroomId,
   };
   const onClickOperation = (type, record) => {
     if (type === 'add') {
+      if (!classroomId) {
+        notification.info({
+          message: '请选择教室！',
+        });
+        return;
+      }
       setEditInfo({});
       setModalTitle('新增');
     } else {
       setModalTitle('编辑');
-      setEditInfo(record);
+      getDetails({ id: record.id }).then((r) => {
+        if (r.code === 0) {
+          let commands = r.data.length
+            ? r.data.map((item) => {
+                item.id = item.controlId;
+                delete item.controlId;
+                return item;
+              })
+            : [];
+          setEditInfo({ ...record, commands });
+        }
+      });
     }
     setModalV(true);
   };
+  // 删除
+  const { confirm } = Modal;
+  function onClickDel(record) {
+    confirm({
+      title: `确认删除${record.name} 吗？`,
+      okText: '确定',
+      cancelText: '取消',
+      icon: <QuestionCircleFilled />,
+      onOk() {
+        delDevice({ id: record.id }).then((r) => {
+          if (r.code === 0) {
+            notification.success({
+              message: r.msg,
+            });
+            getTable();
+            setEditInfo({});
+          } else {
+            notification.error({
+              message: r.msg,
+            });
+          }
+        });
+      },
+      onCancel() {},
+    });
+  }
   return (
     <div className="treeWrapper">
       <DeviceConfigModal {...modalProps} />

@@ -5,6 +5,7 @@ export default {
   state: {
     auth: [],
     moreMenu: [],
+    assetsMenu: [],
   },
   effects: {
     *getAuth(_, { call, put, callback }) {
@@ -21,14 +22,17 @@ export default {
   reducers: {
     saveAuth(state, { payload }) {
       let menuArr = [];
-
+      let assetsArr = [];
       if (payload.length) {
         menuArr = payload[0].children.filter((item) => item.route === '/more')[0].children || [];
+        assetsArr =
+          payload[0].children.filter((item) => item.route === '/assetsManage')[0].children || [];
       }
       return {
         ...state,
         auth: payload,
         moreMenu: menuArr,
+        assetsMenu: assetsArr,
       };
     },
   },
