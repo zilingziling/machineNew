@@ -4,13 +4,22 @@ import { add_edit, addDevice, getBrandsTree, getCommands, getTypes } from '@/ser
 import BaseModal from '@/components/baseModal';
 import { layout } from '@/utils/common';
 
-const DeviceConfigModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, classroomId }) => {
+const DeviceConfigModal = ({
+  modalTitle,
+  modalV,
+  setModalV,
+  getTable,
+  editInfo,
+  classroomId,
+  command,
+  setCommand,
+}) => {
   const [form] = Form.useForm();
-  const [command, setCommand] = useState([]);
 
   const onModalCancel = () => {
     setModalV(false);
   };
+  const [typeId, setTypeId] = useState('');
   //  编辑回显
   useEffect(() => {
     if (Object.keys(editInfo).length && modalTitle.includes('编辑')) {
@@ -22,9 +31,26 @@ const DeviceConfigModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, 
         serialNumber: editInfo.serialNumber,
         equipmentSort: editInfo.equipmentSort,
       });
-      if (editInfo.controlCommandId && editInfo.command) {
+      if (editInfo.commands.length) {
         let formatedCommad = [];
-      }
+        getCommands({ typeId: editInfo.typeId }).then((r) => {
+          if (r.code === 0 && r.data.length) {
+            editInfo.commands.forEach((i) => {
+              r.data.forEach((j) => {
+                if (i.id === j.id) {
+                  formatedCommad.push({
+                    ...i,
+                    ...j,
+                  });
+                }
+              });
+            });
+            setCommand(formatedCommad);
+          } else {
+            setCommand([]);
+          }
+        });
+      } else setCommand([]);
     } else {
       form.resetFields();
     }
@@ -121,7 +147,7 @@ const DeviceConfigModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, 
     return brandName + typeName;
   };
   const [show, setShow] = useState(false);
-  const [typeId, setTypeId] = useState('');
+
   useEffect(() => {
     getCommands({ typeId }).then((r) => {
       if (r.code === 0) {

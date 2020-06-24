@@ -72,7 +72,6 @@ const DeviceConfig = () => {
   useEffect(() => {
     getDeviceConfigTree().then((r) => {
       if (r.code === 0) {
-        // console.log(formatTreeData(r.data, true));
         setClassTree(formatTreeData(r.data, true));
       }
     });
@@ -114,6 +113,7 @@ const DeviceConfig = () => {
   const [modalTitle, setModalTitle] = useState('');
   const [modalV, setModalV] = useState(false);
   const [editInfo, setEditInfo] = useState({});
+  const [command, setCommand] = useState([]);
   const modalProps = {
     modalTitle,
     modalV,
@@ -121,6 +121,8 @@ const DeviceConfig = () => {
     getTable,
     editInfo,
     classroomId,
+    command,
+    setCommand,
   };
   const onClickOperation = (type, record) => {
     if (type === 'add') {
@@ -131,6 +133,7 @@ const DeviceConfig = () => {
         return;
       }
       setEditInfo({});
+      setCommand([]);
       setModalTitle('新增');
     } else {
       setModalTitle('编辑');

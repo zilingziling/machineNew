@@ -131,7 +131,19 @@ export default {
                 {
                   path: '/assetsManage/assetsMore',
                   name: '更多管理',
-                  component: './assetsManage/dataCount/dataCount',
+                  redirect: '/assetsManage/assetsMore/maintain',
+                  routes: [
+                    {
+                      path: '/assetsManage/assetsMore/maintain',
+                      name: '维修人员',
+                      component: './assetsManage/maintain/maintain',
+                    },
+                    {
+                      path: '/assetsManage/assetsMore/factory',
+                      name: '设备厂商',
+                      component: './assetsManage/factory/factory',
+                    },
+                  ],
                 },
               ],
             },
