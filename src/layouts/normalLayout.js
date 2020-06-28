@@ -19,6 +19,7 @@ const NormalLayout = (props) => {
   // }, []);
   const { moreMenu, assetsMenu, route } = props;
   const menus = route.path === '/more' ? moreMenu : route.path.includes('assets') ? assetsMenu : [];
+  const [show, setShow] = useState(false);
   return (
     <Layout>
       <Sider>
@@ -30,28 +31,36 @@ const NormalLayout = (props) => {
               item.children.length
             ) {
               return (
-                // <Menu mode="inline" key={item.id}>
-                //   <SubMenu
-                //     key={item.id}
-                //     defaultSelectedKeys={item.children[0].id}
-                //     icon={<UserOutlined />}
-                //     title={item.name}
-                //   >
-                //     {
-                // console.log(item.children)
-                item.children.map((i) => (
-                  <NavLink
-                    activeStyle={navActive}
-                    className={styles.sideLink}
-                    key={i.id}
-                    to={i.route}
-                  >
-                    {i.name}
-                  </NavLink>
-                ))
-                //     }
-                //   </SubMenu>
-                // </Menu>
+                <div key={item.id} className={styles.dropStyle}>
+                  <div className={styles.sideLink} onClick={() => setShow(!show)}>
+                    <h1>{item.name}</h1>
+                    <img
+                      src={
+                        show
+                          ? require('../../src/assets/images/up.png')
+                          : require('../../src/assets/images/down.png')
+                      }
+                    />
+                  </div>
+                  {show && (
+                    <div className={styles.drop}>
+                      {
+                        // console.log(item.children)
+                        item.children.map((i) => (
+                          <NavLink
+                            activeStyle={navActive}
+                            className={styles.sideLink}
+                            key={i.id}
+                            to={i.route}
+                            style={{ fontSize: '0.8rem' }}
+                          >
+                            {i.name}
+                          </NavLink>
+                        ))
+                      }
+                    </div>
+                  )}
+                </div>
               );
             } else {
               return (

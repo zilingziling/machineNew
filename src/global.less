@@ -6,6 +6,20 @@ body,
   box-sizing: border-box;
   background-color: transparent !important;
   //overflow-x: hidden;
+  .ant-menu-inline .ant-menu-submenu-title {
+    padding: 0 !important;
+    text-align: center;
+    font-size: 1rem;
+    .ant-menu-submenu-arrow{
+      color: rgb(41, 134, 212);
+    }
+  }
+  .ant-menu-submenu > .ant-menu{
+    background: none;
+  }
+  .ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left{
+    border-right: none;
+  }
   .ant-modal-confirm .ant-modal-body{
     background: #1f4191;
   }
