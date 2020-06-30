@@ -21,3 +21,4 @@ export const roleLayout = {
   },
 };
 export const myLocale = { emptyText: '暂无数据' };
+export const w250 = { width: 250 };

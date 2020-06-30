@@ -95,6 +95,39 @@ export const formatTreeData = (res, uuid = false) => {
   });
   return ant;
 };
+// treeSelect key value 都用uuid
+export const formatTreeSelect = (res) => {
+  let ant = [];
+  res.forEach((e) => {
+    if (e.children && e.children.length) {
+      ant.push({
+        title: e.name,
+        value: e.uuid,
+        parent: e.parent,
+        children: formatTreeSelect(e.children),
+        id: e.id,
+        key: e.uuid,
+        icon: e.icon,
+        url: e.url,
+        leaf: false,
+        sort: e.sort,
+      });
+    } else {
+      ant.push({
+        title: e.name,
+        value: e.uuid,
+        parent: e.parent,
+        id: e.id,
+        key: e.uuid,
+        leaf: true,
+        icon: e.icon,
+        url: e.url,
+        sort: e.sort,
+      });
+    }
+  });
+  return ant;
+};
 // 格式化操作菜单
 export const formatOpeTree = (data) => {
   return data.map((v) => {

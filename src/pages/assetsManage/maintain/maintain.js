@@ -66,11 +66,11 @@ const Maintain = () => {
     },
     {
       title: '总维修数量',
-      dataIndex: 'sort',
+      dataIndex: 'allRepair',
     },
     {
       title: '在修数量',
-      dataIndex: 'sort',
+      dataIndex: 'inRepair',
     },
     {
       title: '操作',

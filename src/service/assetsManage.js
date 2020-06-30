@@ -18,3 +18,15 @@ export function getMaintainType(p) {
     params: p,
   });
 }
+export function getMaintainer(p) {
+  return request('/integrated/maintainer/userData', {
+    method: 'get',
+    params: p,
+  });
+}
+export function firstStep(p) {
+  return request('/integrated/maintainer/save', {
+    method: 'get',
+    params: p,
+  });
+}
