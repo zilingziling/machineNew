@@ -3,10 +3,16 @@ import { Form, Input, notification, Radio, Select, Button, Divider, TreeSelect }
 import { w250, roleLayout } from '../../../utils/common';
 import { add_edit, getDeviceConfigTree } from '@/service/device';
 import BaseModal from '@/components/baseModal';
-import { firstStep, getMaintainer, getMaintainType } from '@/service/assetsManage';
+import {
+  firstStep,
+  getMaintainer,
+  getMaintainType,
+  saveDict,
+  saveTypeBrands,
+} from '@/service/assetsManage';
 import ChooseType from '@/pages/assetsManage/maintain/chooseType';
 import styles from './index.less';
-import { formatTreeData, formatTreeSelect } from '@/utils/func';
+import { formatTreeData, formatTreeSelect, getParentSchool } from '@/utils/func';
 const { Option } = Select;
 const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
   const [form] = Form.useForm();
@@ -16,7 +22,6 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
   const [info, setInfo] = useState({});
   // 参数
   const [maintainerTypeBrands, setTypeBrands] = useState([{}]);
-  const [maintainerClassrooms, setClassrooms] = useState([]);
   //
   const onModalCancel = () => {
     setModalV(false);
@@ -25,23 +30,26 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
   };
   //  编辑回显
   useEffect(() => {
+    console.log(editInfo);
     if (Object.keys(editInfo).length && modalTitle.includes('编辑')) {
       form.setFieldsValue({
         name: editInfo.name,
-        sort: editInfo.sort,
+        phone: editInfo.phone,
+        'user.id': account.find((item) => item.account === editInfo.account).id,
+        'dict.id': editInfo.dictId,
       });
+      if (maintainType.find((item) => item.id === editInfo.dictId).name.includes('区域')) {
+        setOkText('下一步');
+      }
     } else {
-      form.setFieldsValue({
-        name: '',
-        sort: '',
-      });
+      form.resetFields();
     }
   }, [editInfo]);
 
   const onModalOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(async (value) => {
         if (value) {
           let params = value;
           if (modalTitle.includes('编辑')) {
@@ -50,9 +58,8 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
           if (okText.includes('下一步')) {
             //
 
-            firstStep(value).then((r) => {
+            firstStep(params).then((r) => {
               if (r.code === 0) {
-                console.log(r.data);
                 setMaintainerId(r.data.id);
                 setTab(2);
               } else {
@@ -63,9 +70,58 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
             });
           } else if (okText.includes('完成') && tab === 2) {
             // 请求两个接口并保存
-            console.log(value);
+            let group = [];
+            let maintainerClassrooms = [];
+            Object.keys(value).forEach((item) => {
+              if (item.includes('dict')) {
+                group.push({
+                  groupId: item.replace(/[^0-9]/gi, ''),
+                  classRoomId: value[item],
+                });
+              }
+            });
+            group.forEach((every) => {
+              let classRoomIds = every.classRoomId; //数组
+              let everyGroup = getParentSchool(classRoomIds, dict);
+              everyGroup.forEach((item) => {
+                item.maintainerId = maintainerId;
+                item.groupId = every.groupId;
+              });
+              maintainerClassrooms = [...maintainerClassrooms, ...everyGroup];
+            });
+
+            let classP = {};
+            let typeP = {};
+            maintainerClassrooms.forEach((item, index) => {
+              classP[`maintainerClassrooms[${index}].maintainerId`] = item.maintainerId;
+              classP[`maintainerClassrooms[${index}].groupId`] = item.groupId;
+              classP[`maintainerClassrooms[${index}].classroomId`] = item.classroomId;
+              classP[`maintainerClassrooms[${index}].schoolId`] = item.schoolId;
+            });
+            maintainerTypeBrands.forEach((item, index) => {
+              typeP[`maintainerTypeBrands[${index}].maintainerId`] = item.maintainerId;
+              typeP[`maintainerTypeBrands[${index}].groupId`] = item.groupId;
+              typeP[`maintainerTypeBrands[${index}].brandId`] = item.brandId;
+              typeP[`maintainerTypeBrands[${index}].typeId`] = item.typeId;
+            });
+            classP.id = editInfo.id;
+            typeP.id = editInfo.id;
+            //  保存 教室信息和类型品牌信息
+            let r1 = await saveDict(classP);
+            let r2 = await saveTypeBrands(typeP);
+            if (r1.code === 0 && r2.code === 0) {
+              notification.success({
+                message: r1.msg,
+              });
+              getTable();
+              onModalCancel();
+            } else {
+              notification.error({
+                message: r1.msg || r2.msg,
+              });
+            }
           } else {
-            firstStep(value).then((r) => {
+            firstStep(params).then((r) => {
               if (r.code === 0) {
                 notification.success({
                   message: r.msg,
@@ -79,19 +135,6 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
               }
             });
           }
-          // add_edit(params).then((r) => {
-          //   if (r.code === 0) {
-          //     notification.success({
-          //       message: r.msg,
-          //     });
-          //     getTable();
-          //     onModalCancel();
-          //   } else {
-          //     notification.error({
-          //       message: r.msg,
-          //     });
-          //   }
-          // });
         }
       })
       .catch(() => {});
@@ -128,21 +171,18 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
         setOkText('下一步');
       } else setOkText('完成');
     }
+    let info;
     if (allValues['user.id']) {
-      let info = account.find((item) => item.id === allValues['user.id']);
+      info = account.find((item) => item.id === allValues['user.id']);
+    }
+    if (!allValues.name) {
       form.setFieldsValue({
         name: info.name,
+      });
+    }
+    if (!allValues.phone) {
+      form.setFieldsValue({
         phone: info.phone,
-      });
-    }
-    if (allValues.name) {
-      form.setFieldsValue({
-        name: allValues.name,
-      });
-    }
-    if (allValues.phone) {
-      form.setFieldsValue({
-        phone: allValues.phone,
       });
     }
   };
@@ -156,7 +196,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
   useEffect(() => {
     form.setFieldsValue({ [`combineName${curGroup}`]: info[`combineName${curGroup}`] });
   }, [info]);
-  const [tab, setTab] = useState(2);
+  const [tab, setTab] = useState(1);
   const [okText, setOkText] = useState('完成');
   useEffect(() => {
     if (tab === 2) {

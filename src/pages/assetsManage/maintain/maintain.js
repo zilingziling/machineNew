@@ -6,7 +6,7 @@ import { del, getBrandList } from '@/service/device';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { myLocale } from '@/utils/common';
 import Add_edit from '@/pages/brand/components/add_edit';
-import { getMaintainList } from '@/service/assetsManage';
+import { delMaintain, getMaintainEdit, getMaintainList } from '@/service/assetsManage';
 import MaintainModal from '@/pages/assetsManage/maintain/maintainModal';
 
 const Maintain = () => {
@@ -108,7 +108,13 @@ const Maintain = () => {
       setModalTitle('新增');
     } else {
       setModalTitle('编辑');
-      setEditInfo(record);
+      getMaintainEdit({ id: record.id }).then((r) => {
+        if (r.code === 0) {
+          setEditInfo({ ...record, groupInfo: r.data });
+        } else {
+          setEditInfo(record);
+        }
+      });
     }
     setModalV(true);
   };
@@ -121,7 +127,7 @@ const Maintain = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        del({ id: record.id }).then((r) => {
+        delMaintain({ id: record.id }).then((r) => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,

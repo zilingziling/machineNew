@@ -35,13 +35,11 @@ const ChooseType = ({
           } catch (e) {
             console.log(e);
           }
-          console.log(param);
           setTypeBrands(param);
           const newInfo = { ...value };
           newInfo[`combineName${curGroup}`] = brandName + typeName;
           setInfo(newInfo);
-          console.log(2);
-          setChooseV(false);
+          onModalCancel();
         }
       })
       .catch(() => {});

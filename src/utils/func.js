@@ -141,3 +141,61 @@ export const formatOpeTree = (data) => {
     };
   });
 };
+// 找 教室的直接上级
+export const getParentSchool = (classRoomId, treeData) => {
+  let params = [];
+  const findParent = (arr, item) => {
+    arr.forEach((tree) => {
+      if (tree.children && tree.children.length) {
+        if (tree.children.find((t) => t.value === item)) {
+          params.push({
+            classroomId: item.replace(/[^0-9]/gi, ''),
+            schoolId: tree.value.replace(/[^0-9]/gi, ''),
+          });
+        } else {
+          findParent(tree.children, item);
+        }
+      }
+    });
+  };
+  const findChildren = (arr, item) => {
+    const findClassroom = (arr) => {
+      arr.forEach((t) => {
+        if (t.value.includes('classroom')) {
+          // 下级直接是教室（比如教学楼）
+          params.push({
+            classroomId: t.value.replace(/[^0-9]/gi, ''),
+            schoolId: item.replace(/[^0-9]/gi, ''),
+          });
+        } else {
+          if (t.children && t.children.length) {
+            findClassroom(t.children);
+          }
+        }
+      });
+    };
+    arr.forEach((tree) => {
+      if (tree.value === item) {
+        if (tree.children && tree.children.length) {
+          findClassroom(tree.children);
+        }
+      } else {
+        // 找value一样的
+        if (tree.children && tree.children.length) {
+          findChildren(tree.children, item);
+        }
+      }
+    });
+  };
+  classRoomId.forEach((item) => {
+    if (item.includes('classroom')) {
+      // 选中的是教室 找他的直接父级的id 例如classroom12
+      // item 是每一个classroomId
+      findParent(treeData, item);
+    } else {
+      //  选中的是学校（父级） 找他下面的教室 例如school12
+      findChildren(treeData, item);
+    }
+  });
+  return params;
+};
