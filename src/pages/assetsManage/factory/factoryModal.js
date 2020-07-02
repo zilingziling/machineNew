@@ -4,17 +4,20 @@ import { w250, roleLayout } from '../../../utils/common';
 import { add_edit, getBrandsTree, getDeviceConfigTree, getTypes } from '@/service/device';
 import BaseModal from '@/components/baseModal';
 import {
+  factoryFirstSave,
   firstStep,
   getMaintainer,
   getMaintainType,
   saveDict,
+  saveFactoryClassInfo,
+  saveFactoryTypeBrands,
   saveTypeBrands,
 } from '@/service/assetsManage';
 import ChooseType from '@/pages/assetsManage/maintain/chooseType';
-import styles from './index.less';
+import styles from '../maintain/index.less';
 import { formatTreeData, formatTreeSelect, getParentSchool } from '@/utils/func';
 const { Option } = Select;
-const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
+const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types, brand }) => {
   const [form] = Form.useForm();
   const [maintainerId, setMaintainerId] = useState('');
   // 选择品类弹窗
@@ -41,7 +44,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
           if (okText.includes('下一步')) {
             //
 
-            firstStep(params).then((r) => {
+            factoryFirstSave(params).then((r) => {
               if (r.code === 0) {
                 setMaintainerId(r.data.id);
                 setTab(2);
@@ -76,28 +79,28 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
             let classP = {};
             let typeP = {};
             maintainerClassrooms.forEach((item, index) => {
-              classP[`maintainerClassrooms[${index}].maintainerId`] = item.maintainerId;
-              classP[`maintainerClassrooms[${index}].groupId`] = item.groupId;
-              classP[`maintainerClassrooms[${index}].classroomId`] = item.classroomId;
-              classP[`maintainerClassrooms[${index}].schoolId`] = item.schoolId;
+              classP[`manufacturerClassrooms[${index}].manufacturerId`] = item.maintainerId;
+              classP[`manufacturerClassrooms[${index}].groupId`] = item.groupId;
+              classP[`manufacturerClassrooms[${index}].classroomId`] = item.classroomId;
+              classP[`manufacturerClassrooms[${index}].schoolId`] = item.schoolId;
             });
             maintainerTypeBrands.forEach((item, index) => {
-              typeP[`maintainerTypeBrands[${index}].maintainerId`] = item.maintainerId;
-              typeP[`maintainerTypeBrands[${index}].groupId`] = item.groupId;
-              typeP[`maintainerTypeBrands[${index}].brandId`] = item.brandId;
-              typeP[`maintainerTypeBrands[${index}].typeId`] = item.typeId;
+              typeP[`manufacturerTypeBrands[${index}].manufacturerId`] = item.maintainerId;
+              typeP[`manufacturerTypeBrands[${index}].groupId`] = item.groupId;
+              typeP[`manufacturerTypeBrands[${index}].brandId`] = item.brandId;
+              typeP[`manufacturerTypeBrands[${index}].typeId`] = item.typeId;
             });
             classP.id = editInfo.id;
             typeP.id = editInfo.id;
             //  保存 教室信息和类型品牌信息
-            let r1 = await saveDict(classP);
-            let r2 = await saveTypeBrands(typeP);
+            let r1 = await saveFactoryClassInfo(classP);
+            let r2 = await saveFactoryTypeBrands(typeP);
             if (r1.code === 0 && r2.code === 0) {
               notification.success({
                 message: '操作成功！',
               });
-              setGroup([1]);
               getTable();
+              setGroup([1]);
               onModalCancel();
             } else {
               notification.error({
@@ -105,7 +108,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
               });
             }
           } else {
-            firstStep(params).then((r) => {
+            factoryFirstSave(params).then((r) => {
               if (r.code === 0) {
                 notification.success({
                   message: r.msg,
@@ -129,7 +132,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
       form.setFieldsValue({
         name: editInfo.name,
         phone: editInfo.phone,
-        'user.id': account.find((item) => item.account === editInfo.account).id,
+        content: editInfo.content,
         'dict.id': editInfo.dictId,
       });
       if (maintainType.find((item) => item.id === editInfo.dictId).name.includes('区域')) {
@@ -151,7 +154,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
             (param[id] || (param[id] = {})).brandId = item.brandId;
             (param[id] || (param[id] = {})).typeId = item.typeId;
             (param[id] || (param[id] = {})).groupId = id;
-            (param[id] || (param[id] = {})).maintainerId = editInfo.id;
+            (param[id] || (param[id] = {})).manufacturerId = editInfo.id;
           } catch (e) {
             console.log(e);
           }
@@ -163,24 +166,10 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
       form.resetFields();
     }
   }, [editInfo]);
-  // 获取维修人员列表
-  const [account, setAccount] = useState([]);
   const [maintainType, setType] = useState([]);
   const [dict, setDict] = useState([]);
-  const [types, setTypes] = useState([]);
-  const [brand, setBrand] = useState([]);
 
   useEffect(() => {
-    getBrandsTree().then((r) => {
-      if (r.code === 0) {
-        setBrand(r.data);
-      }
-    });
-    getTypes().then((r) => {
-      if (r.code === 0) {
-        setTypes(r.data);
-      }
-    });
     // 负责设备radio类型
     getMaintainType().then((r) => {
       if (r.code === 0) {
@@ -193,12 +182,6 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
         setDict(formatTreeSelect(r.data));
       }
     });
-    //   账号
-    getMaintainer().then((r) => {
-      if (r.code === 0) {
-        setAccount(r.data);
-      }
-    });
   }, []);
   const formValueChange = (changedValues, allValues) => {
     if (allValues['dict.id']) {
@@ -208,20 +191,6 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
       ) {
         setOkText('下一步');
       } else setOkText('完成');
-    }
-    let info;
-    if (allValues['user.id']) {
-      info = account.find((item) => item.id === allValues['user.id']);
-    }
-    if (!Object.keys(allValues).find((item) => item === 'name')) {
-      form.setFieldsValue({
-        name: info.name,
-      });
-    }
-    if (!Object.keys(allValues).find((item) => item === 'phone')) {
-      form.setFieldsValue({
-        phone: info.phone,
-      });
     }
   };
   const onClickChoose = (id) => {
@@ -297,9 +266,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
     setTypeBrands,
     maintainerId,
     types,
-    setTypes,
     brand,
-    setBrand,
   };
   return (
     <BaseModal
@@ -313,24 +280,18 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
       <Form onValuesChange={formValueChange} form={form} {...roleLayout} className="mt1">
         {tab === 1 ? (
           <>
-            <Form.Item name="user.id" label="人员账号">
-              <Select placeholder="选择账号">
-                {account.map((item) => (
-                  <Option value={item.id} key={item.id}>
-                    {item.account}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
             <Form.Item
               name="name"
-              label="姓名"
-              rules={[{ required: true, message: '请输入姓名！' }]}
+              label="名称"
+              rules={[{ required: true, message: '请输入名称！' }]}
             >
               <Input />
             </Form.Item>
             <Form.Item name="phone" label="电话">
               <Input maxLength={11} />
+            </Form.Item>
+            <Form.Item name="content" label="说明">
+              <Input />
             </Form.Item>
             <Form.Item name="dict.id" label="负责设备">
               <Radio.Group>
@@ -354,4 +315,4 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
     </BaseModal>
   );
 };
-export default MaintainModal;
+export default FactoryModal;

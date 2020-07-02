@@ -17,10 +17,7 @@ const Add_edit = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
         sort: editInfo.sort,
       });
     } else {
-      form.setFieldsValue({
-        name: '',
-        sort: '',
-      });
+      form.resetFields();
     }
   }, [editInfo]);
 

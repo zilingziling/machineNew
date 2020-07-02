@@ -32,7 +32,6 @@ const errorHandler = (error) => {
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
     const { status } = response;
-    console.log(response);
 
     notification.error({
       message: `请求错误 ${status}`,

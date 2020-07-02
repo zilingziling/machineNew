@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, notification, Radio, InputNumber, Select } from 'antd';
 import { layout, roleLayout } from '../../../utils/common';
 import BaseModal from '@/components/baseModal';
-import { getBrandsTree, getTypes } from '@/service/device';
 const { Option } = Select;
 const ChooseType = ({
   chooseV,
@@ -13,9 +12,7 @@ const ChooseType = ({
   setTypeBrands,
   maintainerId,
   types,
-  setTypes,
   brand,
-  setBrand,
 }) => {
   const [form] = Form.useForm();
   const onModalCancel = () => {
@@ -57,7 +54,7 @@ const ChooseType = ({
           label="品牌"
           rules={[{ required: true, message: '请选择品牌！' }]}
         >
-          <Select showSearch placeholder="选择品牌">
+          <Select placeholder="选择品牌">
             {brand.map((item) => (
               <Option value={item.id} key={item.id}>
                 {item.name}
@@ -70,7 +67,7 @@ const ChooseType = ({
           label="类型"
           rules={[{ required: true, message: '请选择类型！' }]}
         >
-          <Select showSearch placeholder="选择类型">
+          <Select placeholder="选择类型">
             {types.map((item) => (
               <Option value={item.id} key={item.id}>
                 {item.name}
