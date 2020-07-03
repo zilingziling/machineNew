@@ -27,7 +27,7 @@ const codeMessage = {
 /**
  * 异常处理程序
  */
-const errorHandler = (error) => {
+const errorHandler = error => {
   const { response } = error;
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
@@ -58,7 +58,7 @@ const request = extend({
     'Content-Type': 'application/x-www-form-urlencoded',
   },
 });
-request.interceptors.response.use(async (response) => {
+request.interceptors.response.use(async response => {
   const data = await response.clone().json();
   if (data && data.code === 404) {
     notification.info({
@@ -67,6 +67,10 @@ request.interceptors.response.use(async (response) => {
     });
     window.localStorage.clear();
     history.push('/login');
+  } else if (data && data.code !== 0) {
+    notification.error({
+      message: data.msg,
+    });
   }
   return response;
 });

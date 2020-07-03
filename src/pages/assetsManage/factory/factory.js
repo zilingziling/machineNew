@@ -16,29 +16,29 @@ const Factory = () => {
   const [total, setTotal] = useState('');
   const [totalPage, setTotalPage] = useState('');
   // search
-  const [typeId, setTypeId] = useState('');
-  const [brandId, setBrandId] = useState('');
+  const [typeId, setTypeId] = useState(undefined);
+  const [brandId, setBrandId] = useState(undefined);
   const [types, setTypes] = useState([]);
   const [brand, setBrand] = useState([]);
   useEffect(() => {
-    getBrandsTree().then((r) => {
+    getBrandsTree().then(r => {
       if (r.code === 0) {
         setBrand(r.data);
       }
     });
-    getTypes().then((r) => {
+    getTypes().then(r => {
       if (r.code === 0) {
         setTypes(r.data);
       }
     });
   }, []);
   useEffect(() => getTable(), [pageSize, current, typeId, brandId]);
-  const onTableChange = (p) => {
+  const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getFactoryList({ page: current, limit: pageSize, typeId, brandId }).then((r) => {
+    getFactoryList({ page: current, limit: pageSize, typeId, brandId }).then(r => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -52,8 +52,8 @@ const Factory = () => {
   };
   const onReset = () => {
     setCurrent(1);
-    setTypeId('');
-    setBrandId('');
+    setTypeId(undefined);
+    setBrandId(undefined);
   };
   const pagination = {
     total,
@@ -125,7 +125,7 @@ const Factory = () => {
       setModalTitle('新增');
     } else {
       setModalTitle('编辑');
-      getFactoryEdit({ id: record.id }).then((r) => {
+      getFactoryEdit({ id: record.id }).then(r => {
         if (r.code === 0) {
           setEditInfo({ ...record, groupInfo: r.data });
         } else {
@@ -144,17 +144,13 @@ const Factory = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delFactory({ id: record.id }).then((r) => {
+        delFactory({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
             setEditInfo({});
-          } else {
-            notification.error({
-              message: r.msg,
-            });
           }
         });
       },
@@ -170,9 +166,10 @@ const Factory = () => {
         <Select
           className="searchInput mr1"
           placeholder="类型"
-          onSelect={(value) => setTypeId(value)}
+          value={typeId}
+          onSelect={value => setTypeId(value)}
         >
-          {types.map((item) => (
+          {types.map(item => (
             <Option value={item.id} key={item.id}>
               {item.name}
             </Option>
@@ -181,9 +178,10 @@ const Factory = () => {
         <Select
           className="searchInput mr1"
           placeholder="品牌"
-          onSelect={(value) => setBrandId(value)}
+          value={brandId}
+          onSelect={value => setBrandId(value)}
         >
-          {brand.map((item) => (
+          {brand.map(item => (
             <Option value={item.id} key={item.id}>
               {item.name}
             </Option>

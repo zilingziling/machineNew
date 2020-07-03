@@ -25,18 +25,18 @@ const DeviceConfig = () => {
   // search
   const [keyword, setKeyword] = useState('');
   useEffect(() => getTable(), [pageSize, current, keyword]);
-  const onTableChange = (p) => {
+  const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
-  const getTable = (id) => {
+  const getTable = id => {
     if (!classroomId && !id) return;
     getDeviceConfig({
       page: current,
       limit: pageSize,
       keyword,
       classroomId: id || classroomId,
-    }).then((r) => {
+    }).then(r => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -70,7 +70,7 @@ const DeviceConfig = () => {
   const onExpand = () => {};
   const [classTree, setClassTree] = useState([]);
   useEffect(() => {
-    getDeviceConfigTree().then((r) => {
+    getDeviceConfigTree().then(r => {
       if (r.code === 0) {
         setClassTree(formatTreeData(r.data, true));
       }
@@ -137,10 +137,10 @@ const DeviceConfig = () => {
       setModalTitle('新增');
     } else {
       setModalTitle('编辑');
-      getDetails({ id: record.id }).then((r) => {
+      getDetails({ id: record.id }).then(r => {
         if (r.code === 0) {
           let commands = r.data.length
-            ? r.data.map((item) => {
+            ? r.data.map(item => {
                 item.id = item.controlId;
                 delete item.controlId;
                 return item;
@@ -161,17 +161,13 @@ const DeviceConfig = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delDevice({ id: record.id }).then((r) => {
+        delDevice({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
             setEditInfo({});
-          } else {
-            notification.error({
-              message: r.msg,
-            });
           }
         });
       },
@@ -194,7 +190,7 @@ const DeviceConfig = () => {
       <div className="normalTable mt0">
         <Input
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={e => setKeyword(e.target.value)}
           onPressEnter={onSearch}
           className="searchInput mr1"
         />

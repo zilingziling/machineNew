@@ -24,23 +24,19 @@ const Add_edit = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
   const onModalOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(value => {
         if (value) {
           let params = value;
           if (modalTitle.includes('编辑')) {
             params.id = editInfo.id;
           }
-          add_edit(params).then((r) => {
+          add_edit(params).then(r => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
               });
               getTable();
               onModalCancel();
-            } else {
-              notification.error({
-                message: r.msg,
-              });
             }
           });
         }

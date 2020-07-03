@@ -14,7 +14,7 @@ const ChangePwd = ({ pwdV, setPwdV, getTable, userId }) => {
   const onModalOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(value => {
         if (value) {
           if (value.password !== value.confirmPwd) {
             notification.error({
@@ -26,17 +26,13 @@ const ChangePwd = ({ pwdV, setPwdV, getTable, userId }) => {
             params.password = SparkMd5.hash(params.password);
             params.oldPassword = SparkMd5.hash(params.oldPassword);
             params.id = userId;
-            changePwd(params).then((r) => {
+            changePwd(params).then(r => {
               if (r.code === 0) {
                 notification.success({
                   message: r.msg,
                 });
                 getTable();
                 onModalCancel();
-              } else {
-                notification.error({
-                  message: r.msg,
-                });
               }
             });
           }

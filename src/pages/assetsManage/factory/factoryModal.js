@@ -35,7 +35,7 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
   const onModalOk = () => {
     form
       .validateFields()
-      .then(async (value) => {
+      .then(async value => {
         if (value) {
           let params = value;
           if (modalTitle.includes('编辑')) {
@@ -44,21 +44,17 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
           if (okText.includes('下一步')) {
             //
 
-            factoryFirstSave(params).then((r) => {
+            factoryFirstSave(params).then(r => {
               if (r.code === 0) {
                 setMaintainerId(r.data.id);
                 setTab(2);
-              } else {
-                notification.error({
-                  message: r.msg,
-                });
               }
             });
           } else if (okText.includes('完成') && tab === 2) {
             // 请求两个接口并保存
             let group = [];
             let maintainerClassrooms = [];
-            Object.keys(value).forEach((item) => {
+            Object.keys(value).forEach(item => {
               if (item.includes('dict')) {
                 group.push({
                   groupId: item.replace(/[^0-9]/gi, ''),
@@ -66,10 +62,10 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
                 });
               }
             });
-            group.forEach((every) => {
+            group.forEach(every => {
               let classRoomIds = every.classRoomId; //数组
               let everyGroup = getParentSchool(classRoomIds, dict);
-              everyGroup.forEach((item) => {
+              everyGroup.forEach(item => {
                 item.maintainerId = maintainerId;
                 item.groupId = every.groupId;
               });
@@ -102,23 +98,15 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
               getTable();
               setGroup([1]);
               onModalCancel();
-            } else {
-              notification.error({
-                message: '操作失败！',
-              });
             }
           } else {
-            factoryFirstSave(params).then((r) => {
+            factoryFirstSave(params).then(r => {
               if (r.code === 0) {
                 notification.success({
                   message: r.msg,
                 });
                 getTable();
                 onModalCancel();
-              } else {
-                notification.error({
-                  message: r.msg,
-                });
               }
             });
           }
@@ -135,7 +123,7 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
         content: editInfo.content,
         'dict.id': editInfo.dictId,
       });
-      if (maintainType.find((item) => item.id === editInfo.dictId).name.includes('区域')) {
+      if (maintainType.find(item => item.id === editInfo.dictId).name.includes('区域')) {
         setOkText('下一步');
         setGroup(editInfo.groupInfo.length ? editInfo.groupInfo : [0]);
       }
@@ -144,7 +132,7 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
         let param = [];
         editInfo.groupInfo.forEach((item, id) => {
           let classroom = item.classroomId.split(',');
-          classroom = classroom.map((item) => `classroom${item}`);
+          classroom = classroom.map(item => `classroom${item}`);
           form.setFieldsValue({
             [`dict${id}`]: classroom,
             [`combineName${id}`]: item.typeBrand,
@@ -171,13 +159,13 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
 
   useEffect(() => {
     // 负责设备radio类型
-    getMaintainType().then((r) => {
+    getMaintainType().then(r => {
       if (r.code === 0) {
         setType(r.data);
       }
     });
     //  选择区域
-    getDeviceConfigTree().then((r) => {
+    getDeviceConfigTree().then(r => {
       if (r.code === 0) {
         setDict(formatTreeSelect(r.data));
       }
@@ -186,14 +174,14 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
   const formValueChange = (changedValues, allValues) => {
     if (allValues['dict.id']) {
       if (
-        maintainType.find((item) => item.id === allValues['dict.id']).name.includes('区域') &&
+        maintainType.find(item => item.id === allValues['dict.id']).name.includes('区域') &&
         tab === 1
       ) {
         setOkText('下一步');
       } else setOkText('完成');
     }
   };
-  const onClickChoose = (id) => {
+  const onClickChoose = id => {
     setCurGroup(id);
     setChooseV(true);
   };
@@ -295,7 +283,7 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
             </Form.Item>
             <Form.Item name="dict.id" label="负责设备">
               <Radio.Group>
-                {maintainType.map((item) => (
+                {maintainType.map(item => (
                   <Radio key={item.id} value={item.id}>
                     {item.name}
                   </Radio>

@@ -133,3 +133,21 @@ export async function addAssets(p) {
     requestType: 'form',
   });
 }
+export function getAssetsWarningList(p) {
+  return request('/integrated/assets/warning', {
+    method: 'get',
+    params: p,
+  });
+}
+export function getAssetsRepairList(p) {
+  return request('/integrated/repair/list', {
+    method: 'get',
+    params: p,
+  });
+}
+export function getRepairProcess(p) {
+  return request('/integrated/dict/findByParent?code=repairProcess ', {
+    method: 'get',
+    params: p,
+  });
+}

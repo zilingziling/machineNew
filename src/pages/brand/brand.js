@@ -17,12 +17,12 @@ const Brand = () => {
   // search
   const [keyword, setKeyword] = useState('');
   useEffect(() => getTable(), [pageSize, current, keyword]);
-  const onTableChange = (p) => {
+  const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getBrandList({ page: current, limit: pageSize, keyword }).then((r) => {
+    getBrandList({ page: current, limit: pageSize, keyword }).then(r => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -99,17 +99,13 @@ const Brand = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        del({ id: record.id }).then((r) => {
+        del({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
             setEditInfo({});
-          } else {
-            notification.error({
-              message: r.msg,
-            });
           }
         });
       },
@@ -124,7 +120,7 @@ const Brand = () => {
         <span>品牌名称：</span>
         <Input
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={e => setKeyword(e.target.value)}
           onPressEnter={onSearch}
           className="searchInput mr1"
         />
@@ -139,7 +135,6 @@ const Brand = () => {
       <Button className="shadowBtn" onClick={() => onClickOperation('add')}>
         新增
       </Button>
-
       <Table
         rowKey="id"
         pagination={pagination}

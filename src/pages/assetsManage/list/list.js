@@ -18,16 +18,16 @@ const List = () => {
   const [totalPage, setTotalPage] = useState('');
   // search
   const [keyword, setKeyword] = useState('');
-  const [type, setType] = useState('');
-  const [typeId, setTypeId] = useState('');
+  const [type, setType] = useState(undefined);
+  const [typeId, setTypeId] = useState(undefined);
   const [options, setOptions] = useState([]);
   useEffect(() => getTable(), [pageSize, current, keyword, type, typeId]);
-  const onTableChange = (p) => {
+  const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getAssetsList({ page: current, limit: pageSize, keyword, type, typeId }).then((r) => {
+    getAssetsList({ page: current, limit: pageSize, keyword, type, typeId }).then(r => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -42,8 +42,8 @@ const List = () => {
   const onReset = () => {
     setCurrent(1);
     setKeyword('');
-    setType('');
-    setTypeId('');
+    setType(undefined);
+    setTypeId(undefined);
   };
   const pagination = {
     total,
@@ -56,23 +56,23 @@ const List = () => {
   const [brands, setBrands] = useState([]);
   const [maintainTree, setMaintainTree] = useState([]);
   useEffect(() => {
-    getTypes().then((r) => {
+    getTypes().then(r => {
       if (r.code === 0) {
         setTypes(r.data);
       }
     });
-    getBrandsTree().then((r) => {
+    getBrandsTree().then(r => {
       if (r.code === 0) {
         setBrands(r.data);
       }
     });
-    getMaintainSelect().then((r) => {
+    getMaintainSelect().then(r => {
       if (r.code === 0) {
         setMaintainTree(r.data);
       }
     });
   }, []);
-  const onSelect1 = (value) => {
+  const onSelect1 = value => {
     setType(value);
     switch (value) {
       case '设备类型':
@@ -177,17 +177,13 @@ const List = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delAssets({ id: record.id }).then((r) => {
+        delAssets({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
             setEditInfo({});
-          } else {
-            notification.error({
-              message: r.msg,
-            });
           }
         });
       },
@@ -200,7 +196,12 @@ const List = () => {
       <ListModal {...modalProps} />
       <div className="searchWrapper">
         <span>筛选：</span>
-        <Select className="searchInput mr1" placeholder="选择筛选类型" onSelect={onSelect1}>
+        <Select
+          value={type}
+          className="searchInput mr1"
+          placeholder="选择筛选类型"
+          onSelect={onSelect1}
+        >
           <Option value="设备类型">类型</Option>
           <Option value="设备品牌">品牌</Option>
           <Option value="维修人">维修负责人</Option>
@@ -208,15 +209,18 @@ const List = () => {
         <Select
           className="searchInput mr1"
           placeholder="请选择"
-          onSelect={(value) => setTypeId(value)}
+          value={typeId}
+          onSelect={value => setTypeId(value)}
         >
-          {options.map((item) => (
-            <Option value={item.id}>{item.name}</Option>
+          {options.map(item => (
+            <Option value={item.id} key={item.id}>
+              {item.name}
+            </Option>
           ))}
         </Select>
         <Input
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={e => setKeyword(e.target.value)}
           onPressEnter={onSearch}
           className="searchInput mr1"
           placeholder="输入名称"
@@ -233,7 +237,7 @@ const List = () => {
         <Button className="shadowBtn">数据导出</Button>
       </div>
       <Table
-        rowKey="equipmentClassroomId"
+        rowKey="id"
         pagination={pagination}
         onChange={onTableChange}
         dataSource={tableList}

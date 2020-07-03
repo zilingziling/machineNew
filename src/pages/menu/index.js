@@ -10,7 +10,7 @@ import OperationModal from '@/pages/menu/components/operationModal';
 import { connect } from 'dva';
 const { DirectoryTree } = Tree;
 const { confirm } = Modal;
-const Menu = (props) => {
+const Menu = props => {
   const [menuTitle, setMTitle] = useState('');
   const [menuV, setMV] = useState(false);
   const [treeData, setTreeData] = useState([]);
@@ -37,7 +37,7 @@ const Menu = (props) => {
   };
   // 获取下拉菜单
   const getMenu = () => {
-    getMenuTree().then((r) => {
+    getMenuTree().then(r => {
       if (r.code === 0) {
         setTreeData(formatTreeData(r.data));
       }
@@ -85,7 +85,7 @@ const Menu = (props) => {
     treeData,
     setMenuInfo,
   };
-  const onClickOpe = (type) => {
+  const onClickOpe = type => {
     if (type === 'add') {
       setMTitle('新增');
       setMV(true);
@@ -116,7 +116,7 @@ const Menu = (props) => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delOperation({ id: record.id }).then((r) => {
+        delOperation({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
@@ -126,10 +126,6 @@ const Menu = (props) => {
             //  操作菜单后
             props.dispatch({
               type: 'global/getAuth',
-            });
-          } else {
-            notification.error({
-              message: r.msg,
             });
           }
         });
@@ -144,7 +140,7 @@ const Menu = (props) => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delMenu({ id: selectMenuInfo.id }).then((r) => {
+        delMenu({ id: selectMenuInfo.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
@@ -154,10 +150,6 @@ const Menu = (props) => {
             //  操作菜单后
             props.dispatch({
               type: 'global/getAuth',
-            });
-          } else {
-            notification.error({
-              message: r.msg,
             });
           }
         });
@@ -172,11 +164,11 @@ const Menu = (props) => {
   const [current, setCurrent] = useState(1);
   const [editInfo, setEditInfo] = useState({});
   const [totalPage, setTotalPage] = useState('');
-  const getOperationList = (id) => {
+  const getOperationList = id => {
     props.dispatch({
       type: 'global/getAuth',
     });
-    getOpeList({ menuId: id || selectMenuInfo.id, page: current, limit: pageSize }).then((r) => {
+    getOpeList({ menuId: id || selectMenuInfo.id, page: current, limit: pageSize }).then(r => {
       if (r.code === 0) {
         setOpeList(r.data.list);
         setTotal(r.data.totalCount);
@@ -206,7 +198,7 @@ const Menu = (props) => {
     }
     setOpeV(true);
   };
-  const onTableChange = (p) => {
+  const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };

@@ -14,14 +14,14 @@ const DeviceFunc = () => {
   const [totalPage, setTotalPage] = useState('');
   // search
   const [keyword, setKeyword] = useState('');
-  const [typeId, setTypeId] = useState('');
+  const [typeId, setTypeId] = useState(undefined);
   useEffect(() => getTable(), [pageSize, current, keyword, typeId]);
-  const onTableChange = (p) => {
+  const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getFuncList({ page: current, limit: pageSize, keyword, typeId }).then((r) => {
+    getFuncList({ page: current, limit: pageSize, keyword, typeId }).then(r => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -36,7 +36,7 @@ const DeviceFunc = () => {
   const onReset = () => {
     setCurrent(1);
     setKeyword('');
-    setTypeId('');
+    setTypeId(undefined);
   };
   const pagination = {
     total,
@@ -61,7 +61,7 @@ const DeviceFunc = () => {
     {
       title: '控制页显示',
       dataIndex: 'isShow',
-      render: (text) => (text === 1 ? '显示' : '不显示'),
+      render: text => (text === 1 ? '显示' : '不显示'),
     },
     {
       title: '排序',
@@ -127,17 +127,13 @@ const DeviceFunc = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delFunc({ id: record.id }).then((r) => {
+        delFunc({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
             setEditInfo({});
-          } else {
-            notification.error({
-              message: r.msg,
-            });
           }
         });
       },
@@ -147,7 +143,7 @@ const DeviceFunc = () => {
   // 获取设备类型列表
   const [types, setType] = useState([]);
   useEffect(() => {
-    getTypes().then((r) => {
+    getTypes().then(r => {
       if (r.code === 0) {
         setType(r.data);
       }
@@ -158,13 +154,8 @@ const DeviceFunc = () => {
       <A_e_func {...modalProps} />
       <div className="searchWrapper">
         <span>设备类型：</span>
-        <Select
-          value={typeId}
-          onChange={(e) => setTypeId(e)}
-          style={{ width: 200 }}
-          className="mr1"
-        >
-          {types.map((type) => (
+        <Select value={typeId} onChange={e => setTypeId(e)} style={{ width: 200 }} className="mr1">
+          {types.map(type => (
             <Select.Option value={type.id} key={type.id}>
               {type.name}
             </Select.Option>
@@ -172,7 +163,7 @@ const DeviceFunc = () => {
         </Select>
         <Input
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={e => setKeyword(e.target.value)}
           onPressEnter={onSearch}
           className="searchInput mr1"
         />

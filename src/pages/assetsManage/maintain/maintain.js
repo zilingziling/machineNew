@@ -19,12 +19,12 @@ const Maintain = () => {
   // search
   const [keyword, setKeyword] = useState('');
   useEffect(() => getTable(), [pageSize, current, keyword]);
-  const onTableChange = (p) => {
+  const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getMaintainList({ page: current, limit: pageSize, keyword }).then((r) => {
+    getMaintainList({ page: current, limit: pageSize, keyword }).then(r => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -108,7 +108,7 @@ const Maintain = () => {
       setModalTitle('新增');
     } else {
       setModalTitle('编辑');
-      getMaintainEdit({ id: record.id }).then((r) => {
+      getMaintainEdit({ id: record.id }).then(r => {
         if (r.code === 0) {
           setEditInfo({ ...record, groupInfo: r.data });
         } else {
@@ -127,17 +127,13 @@ const Maintain = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delMaintain({ id: record.id }).then((r) => {
+        delMaintain({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
             setEditInfo({});
-          } else {
-            notification.error({
-              message: r.msg,
-            });
           }
         });
       },
@@ -152,7 +148,7 @@ const Maintain = () => {
         <span>名称：</span>
         <Input
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={e => setKeyword(e.target.value)}
           onPressEnter={onSearch}
           className="searchInput mr1"
         />

@@ -25,7 +25,7 @@ const OperationModal = ({
     setEditInfo({});
   };
   useEffect(() => {
-    getMenuCode().then((r) => {
+    getMenuCode().then(r => {
       if (r.code === 0) {
         setMenuCode(formatTreeData(r.data));
       }
@@ -46,12 +46,12 @@ const OperationModal = ({
   const opeOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(value => {
         if (value) {
           const params = opeTitle.includes('编辑')
             ? { ...value, 'menu.id': selectMenuInfo.id, id: editInfo.id }
             : { ...value, 'menu.id': selectMenuInfo.id };
-          saveOperation(params).then((r) => {
+          saveOperation(params).then(r => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
@@ -61,10 +61,6 @@ const OperationModal = ({
               //  操作菜单后
               dispatch({
                 type: 'global/getAuth',
-              });
-            } else {
-              notification.error({
-                message: r.msg,
               });
             }
           });

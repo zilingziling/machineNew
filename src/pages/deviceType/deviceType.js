@@ -15,12 +15,12 @@ const DeviceType = () => {
   // search
   const [keyword, setKeyword] = useState('');
   useEffect(() => getTable(), [pageSize, current, keyword]);
-  const onTableChange = (p) => {
+  const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getDtypeList({ page: current, limit: pageSize, keyword }).then((r) => {
+    getDtypeList({ page: current, limit: pageSize, keyword }).then(r => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -55,7 +55,7 @@ const DeviceType = () => {
     {
       title: '控制页显示',
       dataIndex: 'isShow',
-      render: (text) => (text === 1 ? '显示' : '不显示'),
+      render: text => (text === 1 ? '显示' : '不显示'),
     },
     {
       title: '类型编码',
@@ -112,17 +112,13 @@ const DeviceType = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delType({ id: record.id }).then((r) => {
+        delType({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
             setEditInfo({});
-          } else {
-            notification.error({
-              message: r.msg,
-            });
           }
         });
       },
@@ -137,7 +133,7 @@ const DeviceType = () => {
         <span>设备类型：</span>
         <Input
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={e => setKeyword(e.target.value)}
           onPressEnter={onSearch}
           className="searchInput mr1"
         />

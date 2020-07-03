@@ -22,7 +22,7 @@ const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, 
       form.resetFields();
     }
   }, [selectMenuInfo, menuTitle]);
-  const onUpload = (e) => {
+  const onUpload = e => {
     if (e.file.status === 'done') {
       if (e.file.response.code === 0) {
         form.setFieldsValue({
@@ -41,10 +41,10 @@ const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, 
   const onOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(value => {
         if (value) {
           const params = menuTitle.includes('编辑') ? { ...value, id: selectMenuInfo.id } : value;
-          saveTree(params).then((r) => {
+          saveTree(params).then(r => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
@@ -54,10 +54,6 @@ const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, 
               //  操作菜单后
               dispatch({
                 type: 'global/getAuth',
-              });
-            } else {
-              notification.error({
-                message: r.msg,
               });
             }
           });

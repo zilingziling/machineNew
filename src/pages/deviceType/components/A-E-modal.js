@@ -28,23 +28,19 @@ const A_e_modal = ({ modalTitle, modalV, setModalV, getTable, editInfo, tempImg,
   const onModalOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(value => {
         if (value) {
           let params = value;
           if (modalTitle.includes('编辑')) {
             params.id = editInfo.id;
           }
-          operate(params).then((r) => {
+          operate(params).then(r => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
               });
               getTable();
               onModalCancel();
-            } else {
-              notification.error({
-                message: r.msg,
-              });
             }
           });
         }
@@ -52,7 +48,7 @@ const A_e_modal = ({ modalTitle, modalV, setModalV, getTable, editInfo, tempImg,
       .catch(() => {});
   };
   // 图片上传
-  const onUpload = (e) => {
+  const onUpload = e => {
     if (e.file.status === 'done') {
       if (e.file.response.code === 0) {
         form.setFieldsValue({

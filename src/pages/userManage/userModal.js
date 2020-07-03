@@ -20,7 +20,7 @@ const UserModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, dispatch
         status: editInfo.status,
         userName: editInfo.userName,
       });
-      getRoles({ userId: editInfo.id }).then((r) => {
+      getRoles({ userId: editInfo.id }).then(r => {
         if (r.code === 0) {
           setRoles(r.data.roleList);
           form.setFieldsValue({
@@ -43,13 +43,13 @@ const UserModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, dispatch
   const onModalOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(value => {
         if (value) {
           let params = value;
           if (modalTitle.includes('编辑')) {
             params.id = editInfo.id;
           }
-          add_edit(params).then((r) => {
+          add_edit(params).then(r => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
@@ -59,10 +59,6 @@ const UserModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, dispatch
               //  操作菜单后
               dispatch({
                 type: 'global/getAuth',
-              });
-            } else {
-              notification.error({
-                message: r.msg,
               });
             }
           });
@@ -74,12 +70,12 @@ const UserModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, dispatch
   const [school, setSchool] = useState([]);
   const [roles, setRoles] = useState([]);
   useEffect(() => {
-    getSchoolOfUser().then((r) => {
+    getSchoolOfUser().then(r => {
       if (r.code === 0) {
         setSchool(formatTreeData(r.data));
       }
     });
-    getRoles().then((r) => {
+    getRoles().then(r => {
       if (r.code === 0) {
         setRoles(r.data.roleList);
       }
@@ -116,7 +112,7 @@ const UserModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, dispatch
         >
           <Radio.Group>
             {roles &&
-              roles.map((item) => (
+              roles.map(item => (
                 <Radio key={item.id} value={item.id}>
                   {item.name}
                 </Radio>

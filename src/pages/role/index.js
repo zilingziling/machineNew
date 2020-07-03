@@ -18,12 +18,12 @@ const Role = () => {
   // search
   const [keyword, setKeyword] = useState('');
   useEffect(() => getTable(), [pageSize, current, keyword]);
-  const onTableChange = (p) => {
+  const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getRoleList({ page: current, limit: pageSize, keyword }).then((r) => {
+    getRoleList({ page: current, limit: pageSize, keyword }).then(r => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -105,17 +105,13 @@ const Role = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        delRole({ id: record.id }).then((r) => {
+        delRole({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
             });
             getTable();
             setEditInfo({});
-          } else {
-            notification.error({
-              message: r.msg,
-            });
           }
         });
       },
@@ -131,7 +127,7 @@ const Role = () => {
         <Input
           className="searchInput mr1"
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={e => setKeyword(e.target.value)}
           onPressEnter={onSearch}
         />
         <Button className="shadowBtn mr1" onClick={onSearch}>

@@ -20,11 +20,11 @@ const Login = ({}) => {
   const onLogin = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(value => {
         if (value) {
           let params = value;
           params.password = SparkMd5.hash(params.password);
-          login(params).then((r) => {
+          login(params).then(r => {
             if (r.code === 0) {
               history.push('/');
               window.localStorage.setItem('token', r.data.token);
@@ -36,15 +36,11 @@ const Login = ({}) => {
                 });
               }, 300);
               form.resetFields();
-            } else {
-              notification.error({
-                message: r.msg,
-              });
             }
           });
         }
       })
-      .catch((error) => {});
+      .catch(error => {});
   };
   return (
     <div className={styles.loginWrapper}>

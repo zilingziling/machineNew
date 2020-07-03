@@ -33,10 +33,10 @@ const DeviceConfigModal = ({
       });
       if (editInfo.commands.length) {
         let formatedCommad = [];
-        getCommands({ typeId: editInfo.typeId }).then((r) => {
+        getCommands({ typeId: editInfo.typeId }).then(r => {
           if (r.code === 0 && r.data.length) {
-            editInfo.commands.forEach((i) => {
-              r.data.forEach((j) => {
+            editInfo.commands.forEach(i => {
+              r.data.forEach(j => {
                 if (i.id === j.id) {
                   formatedCommad.push({
                     ...i,
@@ -59,12 +59,12 @@ const DeviceConfigModal = ({
   const onModalOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(value => {
         if (value) {
           console.log(value);
           let params = {};
-          let controlCommandIds = command.map((item) => item.id);
-          let commands = command.map((item) => {
+          let controlCommandIds = command.map(item => item.id);
+          let commands = command.map(item => {
             if (value[item.id]) {
               console.log(value[item.id]);
               return value[item.id];
@@ -83,17 +83,13 @@ const DeviceConfigModal = ({
             params.id = editInfo.id;
             params.equipmentSort = value.equipmentSort;
           }
-          addDevice(params).then((r) => {
+          addDevice(params).then(r => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
               });
               getTable();
               onModalCancel();
-            } else {
-              notification.error({
-                message: r.msg,
-              });
             }
           });
         }
@@ -104,12 +100,12 @@ const DeviceConfigModal = ({
   const [types, setType] = useState([]);
   const [brands, setBrands] = useState([]);
   useEffect(() => {
-    getTypes().then((r) => {
+    getTypes().then(r => {
       if (r.code === 0) {
         setType(r.data);
       }
     });
-    getBrandsTree().then((r) => {
+    getBrandsTree().then(r => {
       if (r.code === 0) {
         setBrands(r.data);
       }
@@ -123,7 +119,7 @@ const DeviceConfigModal = ({
       });
     }
     if (allValues['type.id']) {
-      types.forEach((item) => {
+      types.forEach(item => {
         if (item.id === allValues['type.id'] && item.code === 'mc_module') {
           setShow(true);
         } else setShow(false);
@@ -134,12 +130,12 @@ const DeviceConfigModal = ({
   const getName = (typeId, brandId) => {
     let typeName = '';
     let brandName = '';
-    types.forEach((item) => {
+    types.forEach(item => {
       if (item.id === typeId) {
         typeName = item.name;
       }
     });
-    brands.forEach((item) => {
+    brands.forEach(item => {
       if (item.id === brandId) {
         brandName = item.name;
       }
@@ -149,7 +145,7 @@ const DeviceConfigModal = ({
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    getCommands({ typeId }).then((r) => {
+    getCommands({ typeId }).then(r => {
       if (r.code === 0) {
         setCommand(r.data);
       } else setCommand([]);
@@ -164,7 +160,7 @@ const DeviceConfigModal = ({
           rules={[{ required: true, message: '请选择设备类型！' }]}
         >
           <Select className="mr1">
-            {types.map((type) => (
+            {types.map(type => (
               <Select.Option value={type.id} key={type.id}>
                 {type.name}
               </Select.Option>
@@ -177,7 +173,7 @@ const DeviceConfigModal = ({
           rules={[{ required: true, message: '请选择设备品牌！' }]}
         >
           <Select className="mr1">
-            {brands.map((type) => (
+            {brands.map(type => (
               <Select.Option value={type.id} key={type.id}>
                 {type.name}
               </Select.Option>
@@ -206,7 +202,7 @@ const DeviceConfigModal = ({
           </Form.Item>
         )}
         {command.length
-          ? command.map((item) => (
+          ? command.map(item => (
               <Form.Item
                 key={item.id}
                 name={item.id}

@@ -32,7 +32,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
   const onModalOk = () => {
     form
       .validateFields()
-      .then(async (value) => {
+      .then(async value => {
         if (value) {
           let params = value;
           if (modalTitle.includes('编辑')) {
@@ -41,21 +41,17 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
           if (okText.includes('下一步')) {
             //
 
-            firstStep(params).then((r) => {
+            firstStep(params).then(r => {
               if (r.code === 0) {
                 setMaintainerId(r.data.id);
                 setTab(2);
-              } else {
-                notification.error({
-                  message: r.msg,
-                });
               }
             });
           } else if (okText.includes('完成') && tab === 2) {
             // 请求两个接口并保存
             let group = [];
             let maintainerClassrooms = [];
-            Object.keys(value).forEach((item) => {
+            Object.keys(value).forEach(item => {
               if (item.includes('dict')) {
                 group.push({
                   groupId: item.replace(/[^0-9]/gi, ''),
@@ -63,10 +59,10 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
                 });
               }
             });
-            group.forEach((every) => {
+            group.forEach(every => {
               let classRoomIds = every.classRoomId; //数组
               let everyGroup = getParentSchool(classRoomIds, dict);
-              everyGroup.forEach((item) => {
+              everyGroup.forEach(item => {
                 item.maintainerId = maintainerId;
                 item.groupId = every.groupId;
               });
@@ -99,23 +95,15 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
               setGroup([1]);
               getTable();
               onModalCancel();
-            } else {
-              notification.error({
-                message: '操作失败！',
-              });
             }
           } else {
-            firstStep(params).then((r) => {
+            firstStep(params).then(r => {
               if (r.code === 0) {
                 notification.success({
                   message: r.msg,
                 });
                 getTable();
                 onModalCancel();
-              } else {
-                notification.error({
-                  message: r.msg,
-                });
               }
             });
           }
@@ -129,10 +117,10 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
       form.setFieldsValue({
         name: editInfo.name,
         phone: editInfo.phone,
-        'user.id': account.find((item) => item.account === editInfo.account).id,
+        'user.id': account.find(item => item.account === editInfo.account).id,
         'dict.id': editInfo.dictId,
       });
-      if (maintainType.find((item) => item.id === editInfo.dictId).name.includes('区域')) {
+      if (maintainType.find(item => item.id === editInfo.dictId).name.includes('区域')) {
         setOkText('下一步');
         setGroup(editInfo.groupInfo.length ? editInfo.groupInfo : [0]);
       }
@@ -141,7 +129,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
         let param = [];
         editInfo.groupInfo.forEach((item, id) => {
           let classroom = item.classroomId.split(',');
-          classroom = classroom.map((item) => `classroom${item}`);
+          classroom = classroom.map(item => `classroom${item}`);
           form.setFieldsValue({
             [`dict${id}`]: classroom,
             [`combineName${id}`]: item.typeBrand,
@@ -171,30 +159,30 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
   const [brand, setBrand] = useState([]);
 
   useEffect(() => {
-    getBrandsTree().then((r) => {
+    getBrandsTree().then(r => {
       if (r.code === 0) {
         setBrand(r.data);
       }
     });
-    getTypes().then((r) => {
+    getTypes().then(r => {
       if (r.code === 0) {
         setTypes(r.data);
       }
     });
     // 负责设备radio类型
-    getMaintainType().then((r) => {
+    getMaintainType().then(r => {
       if (r.code === 0) {
         setType(r.data);
       }
     });
     //  选择区域
-    getDeviceConfigTree().then((r) => {
+    getDeviceConfigTree().then(r => {
       if (r.code === 0) {
         setDict(formatTreeSelect(r.data));
       }
     });
     //   账号
-    getMaintainer().then((r) => {
+    getMaintainer().then(r => {
       if (r.code === 0) {
         setAccount(r.data);
       }
@@ -203,7 +191,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
   const formValueChange = (changedValues, allValues) => {
     if (allValues['dict.id']) {
       if (
-        maintainType.find((item) => item.id === allValues['dict.id']).name.includes('区域') &&
+        maintainType.find(item => item.id === allValues['dict.id']).name.includes('区域') &&
         tab === 1
       ) {
         setOkText('下一步');
@@ -211,20 +199,20 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
     }
     let info;
     if (allValues['user.id']) {
-      info = account.find((item) => item.id === allValues['user.id']);
+      info = account.find(item => item.id === allValues['user.id']);
     }
-    if (!Object.keys(allValues).find((item) => item === 'name')) {
+    if (!Object.keys(allValues).find(item => item === 'name')) {
       form.setFieldsValue({
         name: info.name,
       });
     }
-    if (!Object.keys(allValues).find((item) => item === 'phone')) {
+    if (!Object.keys(allValues).find(item => item === 'phone')) {
       form.setFieldsValue({
         phone: info.phone,
       });
     }
   };
-  const onClickChoose = (id) => {
+  const onClickChoose = id => {
     setCurGroup(id);
     setChooseV(true);
   };
@@ -315,7 +303,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
           <>
             <Form.Item name="user.id" label="人员账号">
               <Select placeholder="选择账号">
-                {account.map((item) => (
+                {account.map(item => (
                   <Option value={item.id} key={item.id}>
                     {item.account}
                   </Option>
@@ -334,7 +322,7 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
             </Form.Item>
             <Form.Item name="dict.id" label="负责设备">
               <Radio.Group>
-                {maintainType.map((item) => (
+                {maintainType.map(item => (
                   <Radio key={item.id} value={item.id}>
                     {item.name}
                   </Radio>
