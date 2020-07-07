@@ -20,14 +20,14 @@ export function mobileValidator(rule, value, callback) {
   callback();
 }
 export function getUuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     let r = (Math.random() * 16) | 0,
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
 export const EventUtil = {
-  addHandle: function (element, type, handle) {
+  addHandle: function(element, type, handle) {
     if (element.addEventListener) {
       element.addEventListener(type, handle);
     } else if (element.attachEvent) {
@@ -36,7 +36,7 @@ export const EventUtil = {
       element['on' + type] = handle;
     }
   },
-  removeHandle: function (element, type, handle) {
+  removeHandle: function(element, type, handle) {
     if (element.removeEventListener) {
       element.removeListener(type, handle);
     } else if (element.detachEvent) {
@@ -46,7 +46,7 @@ export const EventUtil = {
     }
   },
 };
-export const uint8Buff2Str = (u8array) => {
+export const uint8Buff2Str = u8array => {
   var str = '';
   for (var i = 0; i < u8array.length; i++) {
     str += String.fromCharCode(u8array[i]);
@@ -54,7 +54,7 @@ export const uint8Buff2Str = (u8array) => {
   return str;
 };
 export const findPosition = (data, key) => {
-  data.map((item) => {
+  data.map(item => {
     if (item.key === key) {
       console.log(item);
     } else if (item.children) {
@@ -65,7 +65,7 @@ export const findPosition = (data, key) => {
 //  格式化树菜单
 export const formatTreeData = (res, uuid = false) => {
   let ant = [];
-  res.forEach((e) => {
+  res.forEach(e => {
     if (e.children && e.children.length) {
       ant.push({
         title: e.name,
@@ -78,6 +78,7 @@ export const formatTreeData = (res, uuid = false) => {
         url: e.url,
         leaf: false,
         sort: e.sort,
+        code: e.code,
       });
     } else {
       ant.push({
@@ -90,15 +91,16 @@ export const formatTreeData = (res, uuid = false) => {
         icon: e.icon,
         url: e.url,
         sort: e.sort,
+        code: e.code,
       });
     }
   });
   return ant;
 };
 // treeSelect key value 都用uuid
-export const formatTreeSelect = (res) => {
+export const formatTreeSelect = res => {
   let ant = [];
-  res.forEach((e) => {
+  res.forEach(e => {
     if (e.children && e.children.length) {
       ant.push({
         title: e.name,
@@ -111,6 +113,7 @@ export const formatTreeSelect = (res) => {
         url: e.url,
         leaf: false,
         sort: e.sort,
+        code: e.code,
       });
     } else {
       ant.push({
@@ -123,14 +126,15 @@ export const formatTreeSelect = (res) => {
         icon: e.icon,
         url: e.url,
         sort: e.sort,
+        code: e.code,
       });
     }
   });
   return ant;
 };
 // 格式化操作菜单
-export const formatOpeTree = (data) => {
-  return data.map((v) => {
+export const formatOpeTree = data => {
+  return data.map(v => {
     return {
       title: v.name,
       id: v.id,
@@ -145,9 +149,9 @@ export const formatOpeTree = (data) => {
 export const getParentSchool = (classRoomId, treeData) => {
   let params = [];
   const findParent = (arr, item) => {
-    arr.forEach((tree) => {
+    arr.forEach(tree => {
       if (tree.children && tree.children.length) {
-        if (tree.children.find((t) => t.value === item)) {
+        if (tree.children.find(t => t.value === item)) {
           params.push({
             classroomId: item.replace(/[^0-9]/gi, ''),
             schoolId: tree.value.replace(/[^0-9]/gi, ''),
@@ -159,8 +163,8 @@ export const getParentSchool = (classRoomId, treeData) => {
     });
   };
   const findChildren = (arr, item) => {
-    const findClassroom = (arr) => {
-      arr.forEach((t) => {
+    const findClassroom = arr => {
+      arr.forEach(t => {
         if (t.value.includes('classroom')) {
           // 下级直接是教室（比如教学楼）
           params.push({
@@ -174,7 +178,7 @@ export const getParentSchool = (classRoomId, treeData) => {
         }
       });
     };
-    arr.forEach((tree) => {
+    arr.forEach(tree => {
       if (tree.value === item) {
         if (tree.children && tree.children.length) {
           findClassroom(tree.children);
@@ -187,7 +191,7 @@ export const getParentSchool = (classRoomId, treeData) => {
       }
     });
   };
-  classRoomId.forEach((item) => {
+  classRoomId.forEach(item => {
     if (item.includes('classroom')) {
       // 选中的是教室 找他的直接父级的id 例如classroom12
       // item 是每一个classroomId

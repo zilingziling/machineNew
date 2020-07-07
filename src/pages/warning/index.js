@@ -4,7 +4,7 @@ import styles from './warning.less';
 import NotHandle from '@/pages/warning/notHandle';
 const Warning = () => {
   return (
-    <div className="normalWrap p24">
+    <div className="normalWrap pl12">
       <Button className="shadowBtn">批量处理</Button>
       <br />
       <Radio.Group defaultValue="1" buttonStyle="solid" className={styles.radio}>

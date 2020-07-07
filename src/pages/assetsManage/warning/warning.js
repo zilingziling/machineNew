@@ -117,7 +117,6 @@ const AssetsWarning = () => {
       render: text => <span className={orderBy === 'scrap' ? 'orange' : ''}>{text}</span>,
     },
   ];
-
   return (
     <div className="normalWrap">
       <div className="searchWrapper">

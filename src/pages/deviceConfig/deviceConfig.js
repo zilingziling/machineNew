@@ -180,7 +180,6 @@ const DeviceConfig = () => {
       <DirectoryTree
         multiple
         showLine
-        defaultExpandAll
         onSelect={onSelect}
         onExpand={onExpand}
         treeData={classTree}
