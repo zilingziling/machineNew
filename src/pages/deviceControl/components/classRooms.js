@@ -1,86 +1,236 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../index.less';
-import { Button, Input, Tooltip, Empty } from 'antd';
+import { Button, Input, Tooltip, Empty, notification } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { getTooltips, initClassroomData } from '@/pages/deviceControl/components/someFunc';
 import SingleRoom from '@/pages/deviceControl/components/singleRoom';
-import { getClassrooms } from '@/service/deviceControl';
-const ClassRooms = ({ schoolId }) => {
-  const [roomData, setRoomData] = useState([]);
-  const [buttons, setButtons] = useState([1, 2, 3, 4]);
-  useEffect(() => {
-    getClassrooms({ schoolId }).then(r => {
+import { getUuid } from '@/utils/func';
+import Group from '@/pages/deviceControl/components/group';
+import { control, getClassrooms } from '@/service/deviceControl';
+const ClassRooms = ({ schoolId, buildingName, roomData, setRoomData, position, setPosition }) => {
+  const [buttons, setButtons] = useState([]);
+  const [selectClassroomInfo, setSelectClassroomInfo] = useState({});
+  const [batch, setBatch] = useState(false);
+  const [isSelectAll, setIsSelectAll] = useState(false);
+  const [keyword, setKeyword] = useState('');
+  const [allBtn, setAllBtn] = useState([]);
+  const onSearch = () => {
+    if (!schoolId) {
+      notification.error({
+        message: '请先选择教室！',
+      });
+      return;
+    }
+    if (!keyword) {
+      return;
+    }
+    getClassrooms({ schoolId, keyword }).then(r => {
       if (r.code === 0) {
-        setRoomData(initClassroomData(r.data));
+        setRoomData(initClassroomData(r.data.resultList));
+        setPosition(r.data.position);
       }
     });
-  }, [schoolId]);
+  };
+  const onReset = () => {
+    setKeyword('');
+    getClassrooms({ schoolId, keyword: '' }).then(r => {
+      if (r.code === 0) {
+        setRoomData(initClassroomData(r.data.resultList));
+        setPosition(r.data.position);
+      }
+    });
+  };
   const singleProps = {
     roomData,
     setRoomData,
+    setButtons,
+    buildingName,
+    setSelectClassroomInfo,
+    batch,
   };
+  const onClickBatch = () => {
+    setRoomData(initClassroomData(roomData).slice());
+    setIsSelectAll(false);
+    if (schoolId) {
+      setBatch(!batch);
+    } else {
+      notification.error({
+        message: '请先选择教室！',
+      });
+    }
+    if (!batch) {
+      setSelectClassroomInfo({});
+      setButtons({});
+    }
+  };
+  // 全选
+  const onclickSelectAll = () => {
+    let a = roomData;
+    setIsSelectAll(!isSelectAll);
+    a.forEach(i => {
+      i.classroomData.forEach(j => {
+        j.checkStatus = true;
+      });
+    });
+    let data = isSelectAll ? initClassroomData(roomData) : a;
+    setRoomData(data.slice());
+  };
+  // roomData改变时
+  useEffect(() => {
+    let arr = [];
+    let btnArr = [];
+    roomData.forEach(item => {
+      item.classroomData.forEach(j => arr.push(j));
+    });
+    arr.forEach(i => {
+      i.baseEquipment.forEach(btn => {
+        if (btnArr.length === 0) {
+          btnArr.push(btn);
+        } else if (btnArr.findIndex(m => btn.code === m.code) === -1) {
+          btnArr.push(btn);
+        }
+      });
+    });
+    setAllBtn(btnArr);
+    if (batch) {
+      const a = arr.find(item => !item.checkStatus);
+      if (a) {
+        setIsSelectAll(false);
+      } else setIsSelectAll(true);
+    }
+  }, [roomData]);
+  const groupProps = {
+    singleProps,
+    batch,
+  };
+  const docClick = () => {
+    let newData = roomData;
+    if (!newData.length) {
+      return;
+    }
+    newData.forEach(item => {
+      item.classroomData.forEach(inner => {
+        if (inner.id === selectClassroomInfo.classroomId) {
+          inner.checkStatus = false;
+        }
+      });
+    });
+    setRoomData(newData.slice());
+    setButtons([]);
+    setSelectClassroomInfo({});
+  };
+  // 取消选择
+  useEffect(() => {
+    if (selectClassroomInfo) {
+      document.addEventListener('click', docClick);
+      return () => {
+        document.removeEventListener('click', docClick);
+      };
+    }
+  }, [selectClassroomInfo]);
+  // 控制
+  const onclickControlBtn = controlCommandId => {
+    let classroomId = [];
+    roomData.forEach(item => {
+      item.classroomData.forEach(j => {
+        if (j.checkStatus) {
+          classroomId.push(j.id);
+        }
+      });
+    });
+    control({ controlCommandId, classroomId }).then(r => {
+      if (r.code === 0) {
+        notification.success({
+          message: r.msg,
+        });
+      }
+    });
+  };
+  const [renderButtons, setRenderButtons] = useState([]);
+  useEffect(() => {
+    setRenderButtons(batch ? allBtn : buttons);
+  }, [batch]);
   return (
     <div className={styles.deviceControlWrapper}>
-      <section className={styles.top}>
+      <section className={styles.top} onClick={e => e.nativeEvent.stopImmediatePropagation()}>
         <div className={styles.btns}>
-          <Button className="shadowBtn mr1">批量操作设备</Button>
-          <Button className="shadowBtn mr1">打开配置页面</Button>
-          <Input className="searchInput mr1" placeholder="输入教室号" />
-          <Button className="shadowBtn mr1">搜索</Button>
-          <Button className="shadowBtn mr1">重置</Button>
+          <Button className="shadowBtn mr1" onClick={onClickBatch}>
+            {batch ? '取消批量操作' : '批量操作设备'}
+          </Button>
+          <Button className="shadowBtn mr1" disabled={batch}>
+            打开配置页面
+          </Button>
+          <Input
+            className="searchInput mr1"
+            onPressEnter={onSearch}
+            placeholder="输入教室号"
+            value={keyword}
+            onChange={e => setKeyword(e.target.value)}
+          />
+          <Button className="shadowBtn mr1" onClick={onSearch}>
+            搜索
+          </Button>
+          <Button className="shadowBtn mr1" onClick={onReset}>
+            重置
+          </Button>
           <Tooltip placement="rightTop" title={getTooltips} autoAdjustOverflow color="#236FB0">
             <QuestionCircleOutlined className={styles.ask} />
           </Tooltip>
         </div>
         <article className={styles.position}>
-          <span className="mr1">清水河校区/品学楼</span>
-          <span className="mr1">上课：1/61</span>
-          <span className="mr1">故障：1/61</span>
+          <span className="mr1">{position}</span>
         </article>
       </section>
       <section className={styles.center}>
+        {batch && (
+          <div className={styles.selectAll} onClick={onclickSelectAll}>
+            <img
+              src={
+                isSelectAll
+                  ? require('../../../assets/deviceControl/checked.png')
+                  : require('../../../assets/deviceControl/check.png')
+              }
+              alt="check"
+            />
+            <span>选择全部</span>
+          </div>
+        )}
         {roomData.length ? (
           roomData.map((item, index) => (
-            <div className={styles.groupWrapper} key={'groupId' + item.groupId}>
-              <h6>{item.group}</h6>
-              <div className={styles.rooms}>
-                {item.classroomData.map((room, index) => (
-                  <SingleRoom
-                    {...singleProps}
-                    key={room.id}
-                    {...room}
-                    moduleStatus={item.moduleStatus}
-                  />
-                ))}
-              </div>
-            </div>
+            <Group {...groupProps} item={item} key={'groupId' + item.groupId} />
           ))
         ) : (
           <Empty />
         )}
       </section>
-      <section className={styles.bottom}>
-        {buttons.length ? (
+      <section className={styles.bottom} onClick={e => e.nativeEvent.stopImmediatePropagation()}>
+        {renderButtons.length ? (
           <>
             <section className={styles.bt}>
               <div>
-                <h3>品学楼A104</h3>
-                <h3>下课中</h3>
+                <h3>{selectClassroomInfo.name}</h3>
+                <h3>{selectClassroomInfo.classStatus}</h3>
               </div>
-              <h3>高级控制>></h3>
+              <Button className="shadowBtn">高级控制>></Button>
             </section>
             <ul className={styles.controlBtns}>
-              {buttons.map(item => (
-                <li key={item}>
-                  <span>上下课</span>
+              {renderButtons.map((item, index) => (
+                <li key={getUuid()}>
+                  <span>{item.type}</span>
                   <div
                     className={styles.gridButtons}
-                    // style={{
-                    //   gridTemplateColumns: `repeat(${Math.ceil(item.keyData.length / 2)},1fr)`,
-                    // }}
+                    style={{
+                      gridTemplateColumns: `repeat(${Math.ceil(item.keyData.length / 2)},1fr)`,
+                    }}
                   >
-                    {[1, 2].map(j => (
-                      <Button className="pad shadowBtn">意见上课</Button>
+                    {item.keyData.map((j, index) => (
+                      <Button
+                        onClick={() => onclickControlBtn(j.controlCommandId)}
+                        key={getUuid()}
+                        className="pad shadowBtn"
+                      >
+                        {j.key}
+                      </Button>
                     ))}
                   </div>
                 </li>

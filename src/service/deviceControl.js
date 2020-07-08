@@ -12,3 +12,10 @@ export function getClassrooms(p) {
     params: p,
   });
 }
+export function control(p) {
+  return request('/integrated/control/batch', {
+    method: 'post',
+    data: p,
+    requestType: 'form',
+  });
+}

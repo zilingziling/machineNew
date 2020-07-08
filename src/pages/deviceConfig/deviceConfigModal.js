@@ -23,7 +23,6 @@ const DeviceConfigModal = ({
   //  编辑回显
   useEffect(() => {
     if (Object.keys(editInfo).length && modalTitle.includes('编辑')) {
-      console.log(editInfo);
       form.setFieldsValue({
         name: editInfo.name,
         'type.id': editInfo.typeId,
@@ -61,12 +60,10 @@ const DeviceConfigModal = ({
       .validateFields()
       .then(value => {
         if (value) {
-          console.log(value);
           let params = {};
           let controlCommandIds = command.map(item => item.id);
           let commands = command.map(item => {
             if (value[item.id]) {
-              console.log(value[item.id]);
               return value[item.id];
             }
           });
@@ -76,7 +73,6 @@ const DeviceConfigModal = ({
           params['brand.id'] = value['brand.id'];
           params['classroom.id'] = classroomId;
           params.commands = commands;
-          console.log(commands);
           params.controlCommandIds = controlCommandIds;
           params.serialNumber = value.serialNumber;
           if (modalTitle.includes('编辑')) {

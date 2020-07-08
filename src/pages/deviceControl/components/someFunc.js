@@ -1,24 +1,30 @@
 import React from 'react';
 import styles from '../index.less';
-export const getTooltips = ({}) => {
+export const getTooltips = () => {
   const data = [
     {
       name: '电脑开启',
+      img: require('../../../assets/deviceControl/greenP.png'),
     },
     {
       name: '电脑关闭',
+      img: require('../../../assets/deviceControl/whiteP.png'),
     },
     {
       name: '投影开启',
+      img: require('../../../assets/deviceControl/greenP.png'),
     },
     {
       name: '投影开启',
+      img: require('../../../assets/deviceControl/whiteP.png'),
     },
     {
       name: '面板解锁',
+      img: require('../../../assets/deviceControl/greenL.png'),
     },
     {
       name: '面板锁定',
+      img: require('../../../assets/deviceControl/whiteL.png'),
     },
   ];
   return (
@@ -32,11 +38,11 @@ export const getTooltips = ({}) => {
         <span>教室下课</span>
       </li>
       <li>
-        <div className={styles.red}>C</div>
+        <div className={styles.toolRed}>C</div>
         <span>中控离线</span>
       </li>
       <li>
-        <div className={styles.red}>M</div>
+        <div className={styles.toolRed}>M</div>
         <span>扩声未开</span>
       </li>
       {data.map((item, index) => (
@@ -52,19 +58,19 @@ export const getSingleTooltip = (classroomStatus, masterEquipment, moduleStatus)
   const data = [
     {
       name: '中控',
-      value: moduleStatus === 'on' ? '在线' : '离线',
+      value: moduleStatus === 'on' ? '在线1' : '离线0',
     },
     {
       name: '教室',
-      value: classroomStatus === 'on' ? '上课' : '下课',
+      value: classroomStatus === 'on' ? '上课1' : '下课0',
     },
   ];
   const getValue = (code, value) => {
     switch (code) {
       case 'computer' || 'projection':
-        return value === 'on' ? '开启' : value === 'off' ? '关闭' : '';
+        return value === 'on' ? '开启1' : value === 'off' ? '关闭0' : '';
       case 'mc_module_lock':
-        return value === 'on' ? '解锁' : value === 'off' ? '锁定' : '';
+        return value === 'on' ? '解锁1' : value === 'off' ? '锁定0' : '';
       default:
         return '';
     }
@@ -89,7 +95,20 @@ export const getSingleTooltip = (classroomStatus, masterEquipment, moduleStatus)
   return (
     <ul className={styles.singleTool}>
       {data.map((item, index) => (
-        <li key={index}>{`${item.name}：${item.value}`}</li>
+        <li key={index}>
+          <span
+            className={
+              item.value.replace(/[^0-9]/gi, '') === '1' ? `${styles.green}` : `${styles.red}`
+            }
+          >{`${item.name}：`}</span>
+          <span
+            className={
+              item.value.replace(/[^0-9]/gi, '') === '1' ? `${styles.green}` : `${styles.red}`
+            }
+          >
+            {item.value.match(/[\u4e00-\u9fa5]/g)}
+          </span>
+        </li>
       ))}
     </ul>
   );
