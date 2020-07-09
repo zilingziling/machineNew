@@ -4,11 +4,21 @@ import { Button, Input, Tooltip, Empty, notification } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { getTooltips, initClassroomData } from '@/pages/deviceControl/components/someFunc';
 import SingleRoom from '@/pages/deviceControl/components/singleRoom';
-import { getUuid } from '@/utils/func';
+import { getUuid, uint8Buff2Str } from '@/utils/func';
 import Group from '@/pages/deviceControl/components/group';
 import { control, getClassrooms } from '@/service/deviceControl';
-const ClassRooms = ({ schoolId, buildingName, roomData, setRoomData, position, setPosition }) => {
-  const [buttons, setButtons] = useState([]);
+import { history } from '@/.umi/core/history';
+import { webSocket } from '@/utils/websocket';
+const ClassRooms = ({
+  schoolId,
+  buildingName,
+  roomData,
+  setRoomData,
+  position,
+  setPosition,
+  buttons,
+  setButtons,
+}) => {
   const [selectClassroomInfo, setSelectClassroomInfo] = useState({});
   const [batch, setBatch] = useState(false);
   const [isSelectAll, setIsSelectAll] = useState(false);
@@ -60,7 +70,7 @@ const ClassRooms = ({ schoolId, buildingName, roomData, setRoomData, position, s
     }
     if (!batch) {
       setSelectClassroomInfo({});
-      setButtons({});
+      setButtons([]);
     }
   };
   // 全选
@@ -146,10 +156,58 @@ const ClassRooms = ({ schoolId, buildingName, roomData, setRoomData, position, s
       }
     });
   };
-  const [renderButtons, setRenderButtons] = useState([]);
+  const toConfig = () => {
+    history.push({
+      pathname: '/more/deviceConfig',
+    });
+  };
+  const renderButtons = batch ? allBtn : buttons;
+  // websocket
+  const getWebsocketMsg = () => {
+    try {
+      window.ws.onmessage = evt => {
+        let baseMsg = proto.cn.yjtianxia.im.protocol2.BaseMsg.deserializeBinary(evt.data);
+        let objdata;
+        try {
+          objdata = uint8Buff2Str(baseMsg.getData());
+          objdata = JSON.parse(objdata);
+          console.log('socket数据', objdata);
+          // if (data.length > 0) {
+          //   console.log(1);
+          //   let ary = data;
+          //   console.log(objdata.classroomData.classroomId);
+          //   ary = ary.map(room => {
+          //     room.classroomData.map(classroom => {
+          //       if (classroom.classroomId === objdata.classroomData.classroomId) {
+          //         if (objdata.classroomData.masterEquipment.length) {
+          //           classroom.masterEquipment.map(i => {
+          //             objdata.classroomData.masterEquipment.map(e => {
+          //               if (i.equipCode === e.equipCode) {
+          //                 i.equipType = e.equipType;
+          //               }
+          //             });
+          //           });
+          //         }
+          //         classroom.classroomType = objdata.classroomData.classroomType;
+          //         classroom.loading = objdata.classroomData.loading;
+          //       }
+          //       return classroom;
+          //     });
+          //     return room;
+          //   });
+          //   setData(ary);
+          // }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    } catch (e) {
+      console.log('deviceControlWsErr', e);
+    }
+  };
   useEffect(() => {
-    setRenderButtons(batch ? allBtn : buttons);
-  }, [batch]);
+    getWebsocketMsg();
+  }, [roomData]);
   return (
     <div className={styles.deviceControlWrapper}>
       <section className={styles.top} onClick={e => e.nativeEvent.stopImmediatePropagation()}>
@@ -157,7 +215,7 @@ const ClassRooms = ({ schoolId, buildingName, roomData, setRoomData, position, s
           <Button className="shadowBtn mr1" onClick={onClickBatch}>
             {batch ? '取消批量操作' : '批量操作设备'}
           </Button>
-          <Button className="shadowBtn mr1" disabled={batch}>
+          <Button className="shadowBtn mr1" disabled={batch} onClick={toConfig}>
             打开配置页面
           </Button>
           <Input
@@ -211,7 +269,7 @@ const ClassRooms = ({ schoolId, buildingName, roomData, setRoomData, position, s
                 <h3>{selectClassroomInfo.name}</h3>
                 <h3>{selectClassroomInfo.classStatus}</h3>
               </div>
-              <Button className="shadowBtn">高级控制>></Button>
+              <h3>高级控制>></h3>
             </section>
             <ul className={styles.controlBtns}>
               {renderButtons.map((item, index) => (

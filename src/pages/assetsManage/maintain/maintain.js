@@ -145,7 +145,7 @@ const Maintain = () => {
     <div className="normalWrap">
       <MaintainModal {...modalProps} />
       <div className="searchWrapper">
-        <span>名称：</span>
+        <span>姓名：</span>
         <Input
           value={keyword}
           onChange={e => setKeyword(e.target.value)}

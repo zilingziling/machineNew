@@ -281,7 +281,11 @@ const FactoryModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, types
             <Form.Item name="content" label="说明">
               <Input />
             </Form.Item>
-            <Form.Item name="dict.id" label="负责设备">
+            <Form.Item
+              name="dict.id"
+              label="负责设备"
+              rules={[{ required: true, message: '请选择！' }]}
+            >
               <Radio.Group>
                 {maintainType.map(item => (
                   <Radio key={item.id} value={item.id}>

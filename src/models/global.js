@@ -1,5 +1,4 @@
 import { getMenus } from '@/service/login';
-
 export default {
   namespace: 'global',
   state: {
@@ -24,9 +23,9 @@ export default {
       let menuArr = [];
       let assetsArr = [];
       if (payload.length) {
-        menuArr = payload[0].children.filter((item) => item.route === '/more')[0].children || [];
+        menuArr = payload[0].children.filter(item => item.route === '/more')[0].children || [];
         assetsArr =
-          payload[0].children.filter((item) => item.route === '/assetsManage')[0].children || [];
+          payload[0].children.filter(item => item.route === '/assetsManage')[0].children || [];
       }
       return {
         ...state,

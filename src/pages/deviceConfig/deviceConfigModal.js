@@ -29,6 +29,7 @@ const DeviceConfigModal = ({
         'brand.id': editInfo.brandId,
         serialNumber: editInfo.serialNumber,
         equipmentSort: editInfo.equipmentSort,
+        model: editInfo.model,
       });
       if (editInfo.commands.length) {
         let formatedCommad = [];
@@ -75,6 +76,7 @@ const DeviceConfigModal = ({
           params.commands = commands;
           params.controlCommandIds = controlCommandIds;
           params.serialNumber = value.serialNumber;
+          params.model = value.model;
           if (modalTitle.includes('编辑')) {
             params.id = editInfo.id;
             params.equipmentSort = value.equipmentSort;
@@ -178,6 +180,13 @@ const DeviceConfigModal = ({
         </Form.Item>
         <Form.Item name="name" label="设备名称">
           <Input disabled />
+        </Form.Item>
+        <Form.Item
+          name="model"
+          label="设备型号"
+          rules={[{ required: true, message: '请选择设备型号！' }]}
+        >
+          <Input />
         </Form.Item>
         {modalTitle.includes('编辑') && (
           <Form.Item

@@ -320,7 +320,11 @@ const MaintainModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) =>
             <Form.Item name="phone" label="电话">
               <Input maxLength={11} />
             </Form.Item>
-            <Form.Item name="dict.id" label="负责设备">
+            <Form.Item
+              name="dict.id"
+              label="负责设备"
+              rules={[{ required: true, message: '请选择！' }]}
+            >
               <Radio.Group>
                 {maintainType.map(item => (
                   <Radio key={item.id} value={item.id}>

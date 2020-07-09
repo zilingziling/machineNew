@@ -5,6 +5,7 @@ import { Button, Input, Form, notification } from 'antd';
 import { login } from '@/service/login';
 import SparkMd5 from 'spark-md5';
 import { history } from 'umi';
+import { webSocket } from '@/utils/websocket';
 const Login = ({}) => {
   const [form] = Form.useForm();
   const [authCode, setCode] = useState('');
@@ -26,6 +27,7 @@ const Login = ({}) => {
           params.password = SparkMd5.hash(params.password);
           login(params).then(r => {
             if (r.code === 0) {
+              webSocket();
               history.push('/');
               window.localStorage.setItem('token', r.data.token);
               window.localStorage.setItem('account', params.account);

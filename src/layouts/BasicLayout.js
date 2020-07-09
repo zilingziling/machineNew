@@ -10,7 +10,7 @@ const activeNav = {
   borderBottom: '2px solid rgba(234,190,54,1)',
 };
 const { confirm } = Modal;
-const BasicLayout = (props) => {
+const BasicLayout = props => {
   // 获取菜单
   useEffect(() => {
     props.dispatch({
@@ -93,6 +93,9 @@ function showConfirm() {
     onOk() {
       window.localStorage.clear();
       history.push('/login');
+      try {
+        window.ws.close();
+      } catch (e) {}
     },
     onCancel() {},
   });

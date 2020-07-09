@@ -1,4 +1,5 @@
 // ref: https://umijs.org/config/
+const { PRO_ENV } = process.env;
 export default {
   routes: [
     {

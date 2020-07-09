@@ -16,7 +16,7 @@ const DeviceControlMain = ({ dispatch, treeData }) => {
   const [buildingName, setBuildingName] = useState('');
   const [roomData, setRoomData] = useState([]);
   const [position, setPosition] = useState('');
-
+  const [buttons, setButtons] = useState([]);
   const onSelect = (value, node, extra) => {
     if (node.node.code === 'school_academic_building') {
       setSchoolId(value);
@@ -25,6 +25,11 @@ const DeviceControlMain = ({ dispatch, treeData }) => {
         if (r.code === 0) {
           setRoomData(initClassroomData(r.data.resultList));
           setPosition(r.data.position);
+          setButtons([]);
+        } else {
+          setRoomData([]);
+          setPosition('');
+          setButtons([]);
         }
       });
     }
@@ -36,6 +41,8 @@ const DeviceControlMain = ({ dispatch, treeData }) => {
     setRoomData,
     position,
     setPosition,
+    buttons,
+    setButtons,
   };
   return (
     <div className="treeWrapper p24">

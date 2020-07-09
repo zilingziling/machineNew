@@ -46,6 +46,7 @@ export const EventUtil = {
     }
   },
 };
+//编码data
 export const uint8Buff2Str = u8array => {
   var str = '';
   for (var i = 0; i < u8array.length; i++) {
