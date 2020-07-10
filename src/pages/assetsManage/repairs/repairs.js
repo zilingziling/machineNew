@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Button, DatePicker, Input, Select, Table } from 'antd';
+import { Button, DatePicker, Input, Modal, notification, Select, Table } from 'antd';
 import { myLocale } from '@/utils/common';
-import { getBrandList } from '@/service/device';
+import { del, getBrandList } from '@/service/device';
 import { showTotal } from '@/utils/func';
 import {
   getAssetsRepairList,
@@ -9,6 +9,8 @@ import {
   getMaintainSelect,
   getRepairProcess,
 } from '@/service/assetsManage';
+import { QuestionCircleFilled } from '@ant-design/icons';
+import OpeModal from '@/pages/assetsManage/repairs/components/opeModal';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const Repair = () => {
@@ -21,16 +23,24 @@ const Repair = () => {
   //
   const [type, setType] = useState(undefined);
   const [typeId, setTypeId] = useState(undefined);
-  const [time, setTime] = useState([]);
+  const [time, setTime] = useState(undefined);
+  const [timeString, setTimeString] = useState(undefined);
   // search
   const [keyword, setKeyword] = useState('');
-  useEffect(() => getTable(), [pageSize, current, keyword, type, typeId]);
+  useEffect(() => getTable(), [pageSize, current, keyword, type, typeId, timeString]);
   const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
   };
   const getTable = () => {
-    getAssetsRepairList({ page: current, limit: pageSize, keyword, type, typeId }).then(r => {
+    getAssetsRepairList({
+      page: current,
+      limit: pageSize,
+      keyword,
+      type,
+      typeId,
+      time: timeString,
+    }).then(r => {
       if (r.code === 0) {
         setTableList(r.data.list);
         setTotal(r.data.totalCount);
@@ -72,10 +82,11 @@ const Repair = () => {
   };
   const onReset = () => {
     setCurrent(1);
-    setKeyword('');
+    setKeyword(undefined);
     setType(undefined);
     setTypeId(undefined);
-    setTime([]);
+    setTime();
+    setTimeString(undefined);
   };
   const pagination = {
     total,
@@ -85,7 +96,8 @@ const Repair = () => {
     showTotal: () => showTotal(totalPage, total),
   };
   const timeChange = (time, string) => {
-    setTime(string);
+    setTime(time);
+    setTimeString(string);
   };
   const column = [
     {
@@ -140,8 +152,52 @@ const Repair = () => {
       title: '操作',
     },
   ];
+  // 弹窗区域
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalV, setModalV] = useState(false);
+  const [editInfo, setEditInfo] = useState({});
+  const modalProps = {
+    modalTitle,
+    modalV,
+    setModalV,
+    getTable,
+    editInfo,
+  };
+  const onClickOperation = (type, record) => {
+    if (type === 'add') {
+      setEditInfo({});
+      setModalTitle('新增');
+    } else {
+      setModalTitle('编辑');
+      setEditInfo(record);
+    }
+    setModalV(true);
+  };
+  // 删除
+  const { confirm } = Modal;
+  function onClickDel(record) {
+    confirm({
+      title: `确认删除${record.name} 吗？`,
+      okText: '确定',
+      cancelText: '取消',
+      icon: <QuestionCircleFilled />,
+      onOk() {
+        del({ id: record.id }).then(r => {
+          if (r.code === 0) {
+            notification.success({
+              message: r.msg,
+            });
+            getTable();
+            setEditInfo({});
+          }
+        });
+      },
+      onCancel() {},
+    });
+  }
   return (
     <div className="normalWrap">
+      <OpeModal {...modalProps} />
       <div className="searchWrapper">
         <span>筛选：</span>
         <Select
@@ -172,14 +228,16 @@ const Repair = () => {
           className="searchInput mr1"
           placeholder="输入名称"
         />
-        <RangePicker className="mr1" allowClear onChange={timeChange} />
+        <RangePicker className="mr1" allowClear onChange={timeChange} value={time} />
         <Button className="shadowBtn mr1" onClick={onSearch}>
           搜索
         </Button>
         <Button className="shadowBtn mr1" onClick={onReset}>
           重置
         </Button>
-        <Button className="shadowBtn mr1">报修录入</Button>
+        <Button className="shadowBtn mr1" onClick={() => onClickOperation('add')}>
+          报修录入
+        </Button>
         <Button className="shadowBtn">数据导出</Button>
       </div>
       <Table

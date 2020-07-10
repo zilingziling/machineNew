@@ -146,8 +146,15 @@ export function getAssetsRepairList(p) {
   });
 }
 export function getRepairProcess(p) {
-  return request('/integrated/dict/findByParent?code=repairProcess ', {
+  return request('/integrated/dict/findByParent?code=repairProcess', {
     method: 'get',
     params: p,
+  });
+}
+export function getAssetsTable(p) {
+  return request('/integrated/assets/data', {
+    method: 'post',
+    data: p,
+    requestType: 'form',
   });
 }

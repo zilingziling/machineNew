@@ -20,5 +20,13 @@ export const roleLayout = {
     span: 16,
   },
 };
+export const repairLayout = {
+  labelCol: {
+    span: 4,
+  },
+  wrapperCol: {
+    span: 20,
+  },
+};
 export const myLocale = { emptyText: '暂无数据' };
 export const w250 = { width: 250 };

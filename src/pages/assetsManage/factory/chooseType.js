@@ -23,10 +23,10 @@ const ChooseType = ({
   const onModalOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then(value => {
         if (value) {
-          const typeName = types.find((item) => item.id === value[`typeId${curGroup}`]).name;
-          const brandName = brand.find((item) => item.id === value[`brandId${curGroup}`]).name;
+          const typeName = types.find(item => item.id === value[`typeId${curGroup}`]).name;
+          const brandName = brand.find(item => item.id === value[`brandId${curGroup}`]).name;
           let param = [...maintainerTypeBrands];
           try {
             (param[curGroup] || (param[curGroup] = {})).brandId = value[`brandId${curGroup}`];
@@ -55,7 +55,7 @@ const ChooseType = ({
           rules={[{ required: true, message: '请选择品牌！' }]}
         >
           <Select placeholder="选择品牌">
-            {brand.map((item) => (
+            {brand.map(item => (
               <Option value={item.id} key={item.id}>
                 {item.name}
               </Option>
@@ -68,7 +68,7 @@ const ChooseType = ({
           rules={[{ required: true, message: '请选择类型！' }]}
         >
           <Select placeholder="选择类型">
-            {types.map((item) => (
+            {types.map(item => (
               <Option value={item.id} key={item.id}>
                 {item.name}
               </Option>
