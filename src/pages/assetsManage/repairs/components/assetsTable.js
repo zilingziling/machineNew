@@ -68,7 +68,6 @@ const AssetsTable = ({ modalV, setModalV }) => {
         let params = [];
         let arr = getParentSchool(value.classroomId, dict);
         arr.forEach(i => params.push(i.classroomId));
-        console.log(params);
 
         getAssetsTable({ classroomId: params }).then(r => {
           if (r.code === 0) {
