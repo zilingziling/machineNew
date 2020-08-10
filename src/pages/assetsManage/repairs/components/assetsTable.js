@@ -18,9 +18,8 @@ import { getDeviceConfigTree } from '@/service/device';
 import { formatTreeSelect, getParentSchool } from '@/utils/func';
 import { layout } from '@/utils/common';
 const { Option } = Select;
-const AssetsTable = ({ modalV, setModalV }) => {
-  const [table, setTable] = useState([]);
-  const [showTable, setShowTable] = useState(false);
+const AssetsTable = ({ modalV, setModalV, selectInfo, setSelectInfo }) => {
+  const [tableData, setTable] = useState([]);
   const [dict, setDict] = useState([]);
   const [classrooms, setCLassrooms] = useState([]);
   useEffect(() => {
@@ -32,6 +31,7 @@ const AssetsTable = ({ modalV, setModalV }) => {
   }, []);
   const onModalCancel = () => {
     setModalV(false);
+    form.resetFields();
   };
   const onModalOk = () => {};
   const columns = [
@@ -50,7 +50,14 @@ const AssetsTable = ({ modalV, setModalV }) => {
     {
       title: '操作',
       render: (text, record) => (
-        <a href="#!" className="opeA">
+        <a
+          href="#!"
+          className="opeA"
+          onClick={() => {
+            setSelectInfo(record);
+            setModalV(false);
+          }}
+        >
           选择
         </a>
       ),
@@ -62,23 +69,23 @@ const AssetsTable = ({ modalV, setModalV }) => {
     showCheckedStrategy: 'SHOW_PARENT',
   };
   const onSearch = () => {
-    form.validateFields().then(value => {
-      if (value) {
-        console.log(value);
-        let params = [];
-        let arr = getParentSchool(value.classroomId, dict);
-        arr.forEach(i => params.push(i.classroomId));
-
-        getAssetsTable({ classroomId: params }).then(r => {
-          if (r.code === 0) {
+    let classRoom = form.getFieldsValue(['classroomId']).classroomId;
+    if (classRoom && classRoom.length) {
+      let params = [];
+      let arr = getParentSchool(classRoom, dict);
+      arr.forEach(i => params.push(i.classroomId));
+      getAssetsTable({ classroomId: params }).then(r => {
+        if (r.code === 0) {
+          if (r.data.length) {
             setTable(r.data);
           }
-        });
-      }
-    });
+        }
+      });
+    }
   };
   return (
     <BaseModal
+      width={700}
       className={styles.assets}
       onOk={onModalOk}
       title="资产选择"
@@ -98,8 +105,14 @@ const AssetsTable = ({ modalV, setModalV }) => {
       <Button className={`shadowBtn ${styles.fr}`} onClick={onSearch}>
         查询
       </Button>
-
-      {showTable && <Table className="normalTable" columns={columns} />}
+      <Table
+        rowKey="id"
+        dataSource={tableData}
+        className="normalTable fixHeight"
+        columns={columns}
+        scroll={{ y: 300 }}
+        pagination={false}
+      />
     </BaseModal>
   );
 };

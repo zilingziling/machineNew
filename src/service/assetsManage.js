@@ -158,3 +158,18 @@ export function getAssetsTable(p) {
     requestType: 'form',
   });
 }
+export function getRepairReasons(p) {
+  return request('/integrated/dict/findByParent?code=repairReason', {
+    method: 'get',
+  });
+}
+export function getRepairProgress(p) {
+  return request('/integrated/dict/findByParent?code=repairProcess', {
+    method: 'get',
+  });
+}
+export function getDesList(p) {
+  return request('/integrated/repair/historyContent', {
+    method: 'get',
+  });
+}

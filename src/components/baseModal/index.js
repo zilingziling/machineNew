@@ -10,9 +10,11 @@ const BaseModal = ({
   okText = '',
   cancelText = '',
   className,
+  width = 540,
 }) => {
   return (
     <Modal
+      width={width}
       className={className}
       getContainer={false}
       visible={visible}

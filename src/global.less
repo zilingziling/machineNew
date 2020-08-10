@@ -124,6 +124,12 @@ li {
     margin-top: 1rem;
     flex-grow: 1;
   }
+  .fixHeight{
+    :global(.ant-table-tbody){
+      height: 14rem;
+      overflow-y: auto;
+    }
+  }
   .iconStyle{
     width: 3rem;
     height: 3rem;
@@ -236,7 +242,6 @@ li {
   }
   .ant-table table {
     border: none ;
-    cursor: pointer;
   }
   .ant-table-tbody>tr>td {
     border-bottom: 1px solid #242567 ;
