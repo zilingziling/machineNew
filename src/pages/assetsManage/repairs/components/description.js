@@ -9,7 +9,7 @@ import {
   Select,
   Upload,
   Button,
-  Checkbox,
+  Descriptions,
   TreeSelect,
   Input,
 } from 'antd';
@@ -18,6 +18,7 @@ import { getDesList } from '@/service/assetsManage';
 const { Option } = Select;
 const DescriptionTable = ({ desV, setDesV, setSelectDes }) => {
   const [listData, setList] = useState([]);
+  const [keyword, setKeyword] = useState('');
   useEffect(() => {
     getDesList().then(r => {
       if (r.code === 0) {
@@ -27,19 +28,16 @@ const DescriptionTable = ({ desV, setDesV, setSelectDes }) => {
   }, []);
   const onModalCancel = () => {
     setDesV(false);
-    form.resetFields();
+    setKeyword('');
   };
   const onModalOk = () => {};
-  const [form] = Form.useForm();
+
   const onSearch = () => {
-    let values = form.getFieldsValue();
-    if (values.keyword) {
-      getDesList({ keyword: values.keyword }).then(r => {
-        if (r.code === 0) {
-          setList(r.data);
-        }
-      });
-    }
+    getDesList({ keyword }).then(r => {
+      if (r.code === 0) {
+        setList(r.data);
+      }
+    });
   };
   return (
     <BaseModal
@@ -50,28 +48,36 @@ const DescriptionTable = ({ desV, setDesV, setSelectDes }) => {
       visible={desV}
       onCancel={onModalCancel}
     >
-      <Form form={form}>
-        <Form.Item name="keyword">
-          <Input placeholder="输入关键字筛选" />
-        </Form.Item>
-      </Form>
-      <Button className="shadowButton" Click={onSearch}>
-        搜索
-      </Button>
-      <List
-        grid={{ gutter: 16, column: 2 }}
-        dataSource={listData}
-        renderItem={item => (
-          <List.Item>
-            <p>
-              {item.content}
-              <a href="#!" className="opeA">
+      <div className="searchWrapper mb1">
+        <Input
+          placeholder="输入关键字筛选"
+          className="searchInput mr1"
+          onChange={e => setKeyword(e.target.value)}
+          allowClear
+        />
+        <Button className="shadowButton" onClick={onSearch}>
+          搜索
+        </Button>
+      </div>
+      <Descriptions bordered column={2} dataSource={listData}>
+        {listData.map((item, index) => (
+          <Descriptions.Item key={index}>
+            <p className={styles.content}>
+              <span className="white">{item.content}</span>
+              <a
+                href="#!"
+                className="opeA"
+                onClick={() => {
+                  setSelectDes(item.content);
+                  setDesV(false);
+                }}
+              >
                 使用
               </a>
             </p>
-          </List.Item>
-        )}
-      />
+          </Descriptions.Item>
+        ))}
+      </Descriptions>
     </BaseModal>
   );
 };

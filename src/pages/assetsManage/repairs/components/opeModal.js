@@ -7,15 +7,22 @@ import BaseModal from '@/components/baseModal';
 import { UploadOutlined } from '@ant-design/icons';
 import { repairLayout, wideLayout } from '@/utils/common';
 import AssetsTable from '@/pages/assetsManage/repairs/components/assetsTable';
-import { getRepairProgress, getRepairReasons } from '@/service/assetsManage';
+import {
+  addRepair,
+  getMaintainSelect,
+  getRepairProgress,
+  getRepairReasons,
+} from '@/service/assetsManage';
 import DescriptionTable from '@/pages/assetsManage/repairs/components/description';
+import FirmTable from '@/pages/assetsManage/repairs/components/firm';
 const { Option } = Select;
-const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
+const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, process, maintainer }) => {
   const [form] = Form.useForm();
   const [reason, setReason] = useState([]);
-  const [progress, setProgress] = useState([]);
+
   const onModalCancel = () => {
     setModalV(false);
+    form.resetFields();
   };
   useEffect(() => {
     getRepairReasons().then(r => {
@@ -23,19 +30,32 @@ const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
         setReason(r.data);
       }
     });
-    getRepairProgress().then(r => {
-      if (r.code === 0) {
-        setProgress(r.data);
-      }
-    });
   }, []);
   //  编辑回显
   useEffect(() => {
     if (Object.keys(editInfo).length && modalTitle.includes('编辑')) {
       form.setFieldsValue({
-        name: editInfo.name,
-        sort: editInfo.sort,
+        assetsId: editInfo.assetsNumber,
+        'reason.id': editInfo.reasonId,
+        content: editInfo.content,
+        repairUser: editInfo.repairUser,
+        maintainerId: editInfo.maintainerId,
+        repairUserPhone: editInfo.repairUserPhone,
+        maintainerPhone: editInfo.maintainerPhone,
+        cost: editInfo.cost,
+        processId: editInfo.processId,
+        repairWay: editInfo.repairWay,
+        'progress.id': editInfo.processId,
       });
+      if (editInfo.manufacturerId) {
+        setCheckedFirm(true);
+        setSelectFirmInfo({
+          name: editInfo.manufacturer,
+          id: editInfo.manufacturerId,
+          phone: editInfo.manufacturerPhone,
+          content: editInfo.manufacturerContent,
+        });
+      }
     } else {
       form.resetFields();
     }
@@ -50,7 +70,11 @@ const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
           if (modalTitle.includes('编辑')) {
             params.id = editInfo.id;
           }
-          add_edit(params).then(r => {
+          params.number = selectInfo.number || '';
+          params.file = tempImg;
+          params.manufacturerId = selectFirmInfo.id;
+          params.assetsId = selectInfo.id;
+          addRepair(params).then(r => {
             if (r.code === 0) {
               notification.success({
                 message: r.msg,
@@ -89,10 +113,55 @@ const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
     setDesV,
     setSelectDes,
   };
+  useEffect(() => {
+    form.setFieldsValue({
+      content: selectDes,
+    });
+  }, [selectDes]);
+  // 图片上传
+  const [tempImg, setTempImg] = useState('');
+  const onUpload = e => {
+    if (e.file.status === 'done') {
+      if (e.file.response.code === 0) {
+        form.setFieldsValue({
+          imageUrl: e.file.response.data,
+        });
+        setTempImg(e.file.response.data);
+        notification.success({
+          message: e.file.response.msg,
+        });
+      } else {
+        notification.error({
+          message: e.file.response.msg,
+        });
+      }
+    }
+  };
+  // 厂商选择
+  const [firmV, setFirmV] = useState(false);
+  const [selectFirmInfo, setSelectFirmInfo] = useState({
+    name: '',
+    id: '',
+    phone: '',
+    content: '',
+  });
+  const [checkedFirm, setCheckedFirm] = useState(false);
+  const onClickFirm = e => {
+    setCheckedFirm(e.target.checked);
+    if (e.target.checked) {
+      setFirmV(true);
+    }
+  };
+  const firmProps = {
+    firmV,
+    setFirmV,
+    setSelectFirmInfo,
+  };
   return (
     <BaseModal onOk={onModalOk} title={modalTitle} visible={modalV} onCancel={onModalCancel}>
       <AssetsTable {...assetsTableProps} />
       <DescriptionTable {...desProps} />
+      <FirmTable {...firmProps} />
       <Form form={form} className="mt1" {...repairLayout}>
         <Form.Item label="资产编号">
           <Form.Item
@@ -107,15 +176,15 @@ const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
           </span>
         </Form.Item>
         {modalTitle.includes('编辑') && (
-          <Card className={styles.infoCard}>
+          <Card style={{ marginBottom: '1rem' }} className={styles.infoCard}>
             <section>
               <div>
-                <p>名称：</p>
-                <p>维修单号：</p>
+                <p>名称：{editInfo.name}</p>
+                <p>维修单号：{editInfo.repairNumber}</p>
               </div>
               <div>
-                <p>位置：</p>
-                <p>报修时间：</p>
+                <p>位置：{editInfo.position}</p>
+                <p>报修时间：{editInfo.repairTime}</p>
               </div>
             </section>
           </Card>
@@ -133,8 +202,8 @@ const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item name="content" label="详细描述">
-          <Form.Item noStyle>
+        <Form.Item label="详细描述">
+          <Form.Item name="content" noStyle>
             <Input.TextArea style={inputWidth}></Input.TextArea>
           </Form.Item>
           <span className={styles.green} onClick={() => setDesV(true)}>
@@ -142,14 +211,14 @@ const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
           </span>
         </Form.Item>
         <Form.Item label="图标">
-          {/*{tempImg || editInfo.imageUrl ? (*/}
-          {/*  <Form.Item noStyle name="imageUrl">*/}
-          {/*    <img className="iconStyle" src={tempImg || editInfo.imageUrl || ''} />*/}
-          {/*  </Form.Item>*/}
-          {/*) : null}*/}
+          {tempImg || editInfo.imageUrl ? (
+            <Form.Item noStyle name="imageUrl">
+              <img className="iconStyle" src={tempImg || editInfo.file || ''} />
+            </Form.Item>
+          ) : null}
           <Upload
             name="file"
-            // onChange={onUpload}
+            onChange={onUpload}
             action="/integrated/file/upload"
             showUploadList={false}
             accept="image/png,image/jpg,image/jpeg"
@@ -162,7 +231,7 @@ const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
         </Form.Item>
         <Form.Item name="progress.id" label="维修进度">
           <Select style={inputWidth}>
-            {progress.map(item => (
+            {process.map(item => (
               <Option value={item.id} key={item.id}>
                 {item.name}
               </Option>
@@ -185,20 +254,39 @@ const OpeModal = ({ modalTitle, modalV, setModalV, getTable, editInfo }) => {
         </div>
         <div className={styles.flex}>
           <Form.Item name="maintainerId" label="维修人" labelCol={4}>
-            <Select style={{ width: 140 }}>
-              <Option value={1}>123</Option>
+            <Select style={{ width: 150 }}>
+              {maintainer.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item name="maintainerPhone" label="电话" labelCol={4}>
             <Input style={{ width: 140 }} />
           </Form.Item>
-          <Form.Item name="manufacturerId" wrapperCol={2}>
-            <Checkbox className={styles.green}>厂商</Checkbox>
+          <Form.Item wrapperCol={2}>
+            <Checkbox onChange={onClickFirm} className={styles.green}>
+              厂商
+            </Checkbox>
           </Form.Item>
         </div>
+        {checkedFirm && selectFirmInfo.id ? (
+          <Card className={styles.infoCard}>
+            <section>
+              <div>
+                <p>厂商：{selectFirmInfo.name}</p>
+                <p>电话：{selectFirmInfo.phone}</p>
+              </div>
+              <div>
+                <p>说明：{selectFirmInfo.content}</p>
+              </div>
+            </section>
+          </Card>
+        ) : null}
       </Form>
     </BaseModal>
   );
 };
 export default OpeModal;
-const inputWidth = { width: '80%' };
+const inputWidth = { width: '80%', resize: 'none' };

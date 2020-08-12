@@ -8,6 +8,9 @@
     div{
       display: flex;
       justify-content: space-between;
+      :not(:last-child){
+        margin-bottom: 1rem;
+      }
     }
   }
 }
@@ -35,5 +38,22 @@
   :global(.ant-form-item){
     margin: 0;
   }
-}
+  :global(.ant-descriptions-item-content){
+    padding: .5rem !important;
 
+  }
+
+  .content{
+    span{
+      margin-right: 1rem;
+    }
+
+  }
+}
+:global(.ant-card){
+  background:rgba(13,34,79,.4) ;
+  padding:1rem 1.5rem;
+}
+:global(.ant-card-body){
+  padding: 0;
+}

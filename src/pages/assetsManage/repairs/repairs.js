@@ -1,16 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { Button, DatePicker, Input, Modal, notification, Select, Table } from 'antd';
+import {
+  Button,
+  DatePicker,
+  Divider,
+  Input,
+  Modal,
+  notification,
+  Select,
+  Table,
+  Tooltip,
+} from 'antd';
 import { myLocale } from '@/utils/common';
 import { del, getBrandList } from '@/service/device';
 import { showTotal } from '@/utils/func';
 import {
+  delRepair,
   getAssetsRepairList,
+  getLogList,
   getMaintainer,
   getMaintainSelect,
   getRepairProcess,
 } from '@/service/assetsManage';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import OpeModal from '@/pages/assetsManage/repairs/components/opeModal';
+import BaseModal from '@/components/baseModal';
+import HandleModal from '@/pages/assetsManage/repairs/components/handleModal';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const Repair = () => {
@@ -27,7 +41,7 @@ const Repair = () => {
   const [timeString, setTimeString] = useState(undefined);
   // search
   const [keyword, setKeyword] = useState('');
-  useEffect(() => getTable(), [pageSize, current, keyword, type, typeId, timeString]);
+  useEffect(() => getTable(), [current]);
   const onTableChange = p => {
     setCurrent(p.current);
     setPageSize(p.pageSize);
@@ -78,7 +92,7 @@ const Repair = () => {
   };
   // 搜索和重置
   const onSearch = () => {
-    setCurrent(1);
+    getTable();
   };
   const onReset = () => {
     setCurrent(1);
@@ -103,6 +117,11 @@ const Repair = () => {
     {
       title: '资产编号',
       dataIndex: 'assetsNumber',
+      render: (text, record) => (
+        <a href="#!" className="lightGreen">
+          {text}
+        </a>
+      ),
     },
     {
       title: '名称',
@@ -115,6 +134,16 @@ const Repair = () => {
     {
       title: '报修原因',
       dataIndex: 'reason',
+      render: (text, record) => (
+        <p>
+          <span className="mr1">{text}</span>
+          {record.file && (
+            <a href="#!" className="lightGreen" onClick={checkBigImg}>
+              附件
+            </a>
+          )}
+        </p>
+      ),
     },
     {
       title: '报修时间',
@@ -123,10 +152,36 @@ const Repair = () => {
     {
       title: '报修人',
       dataIndex: 'repairUser',
+      render: (text, record) => (
+        <p>
+          <span className="mr1">{text}</span>
+          {record.repairUserPhone && (
+            <Tooltip title={record.repairUserPhone}>
+              <a href="#!" className="lightGreen">
+                电话
+              </a>
+            </Tooltip>
+          )}
+        </p>
+      ),
     },
     {
       title: '维修进度',
       dataIndex: 'process',
+      render: (text, record) => (
+        <a
+          href="#!"
+          className={
+            record.process === '待维修'
+              ? 'red'
+              : record.process === '维修中'
+              ? 'yellow'
+              : 'greenStatus'
+          }
+        >
+          {text}
+        </a>
+      ),
     },
     {
       title: '维修方式',
@@ -139,6 +194,18 @@ const Repair = () => {
     {
       title: '维修人',
       dataIndex: 'maintainer',
+      render: (text, record) => (
+        <p>
+          <span className="mr1">{text}</span>
+          {record.maintainerPhone && (
+            <Tooltip title={record.maintainerPhone}>
+              <a href="#!" className="lightGreen">
+                电话
+              </a>
+            </Tooltip>
+          )}
+        </p>
+      ),
     },
     {
       title: '维修单号',
@@ -150,8 +217,95 @@ const Repair = () => {
     },
     {
       title: '操作',
+      render: (text, record) => (
+        <>
+          <a href="#!" className="opeA" onClick={() => onClickHandle(record)}>
+            处理
+          </a>
+          <Divider type="vertical" />
+          <a href="#!" className="opeA" onClick={() => onClickOperation('edit', record)}>
+            编辑
+          </a>
+          <Divider type="vertical" />
+          <a href="#!" className="opeA" onClick={() => checkLog(record)}>
+            日志
+          </a>
+          <Divider type="vertical" />
+          <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
+            删除
+          </a>
+        </>
+      ),
     },
   ];
+  // 处理
+  const [handleV, setHandleV] = useState(false);
+  const [handleId, setHandleId] = useState('');
+  const handleProps = {
+    handleV,
+    setHandleV,
+    process,
+    maintainer,
+    handleId,
+    getTable,
+  };
+  const onClickHandle = record => {
+    setHandleV(true);
+    setHandleId(record.id);
+  };
+  // 查看大图
+  const checkBigImg = record => {
+    Modal.info({
+      title: '附件',
+      icon: null,
+      width: 600,
+      okText: '确定',
+      maskClosable: true,
+      content: <img src={record.file} style={{ height: '20rem' }} />,
+      onOk() {},
+    });
+  };
+  // 查看日志
+  const logColumn = [
+    {
+      title: '时间',
+      dataIndex: 'time',
+    },
+    {
+      title: '记录',
+      dataIndex: 'record',
+    },
+    {
+      title: '处理人',
+      dataIndex: 'user',
+    },
+  ];
+  const checkLog = record => {
+    getLogList({ id: record.id }).then(r => {
+      if (r.code === 0) {
+        Modal.info({
+          title: '日志',
+          icon: null,
+          width: 600,
+          okText: '确定',
+          maskClosable: true,
+          centered: true,
+          content: (
+            <Table
+              bordered
+              rowKey="id"
+              dataSource={r.data}
+              className="normalTable fixHeight"
+              columns={logColumn}
+              scroll={{ y: 300 }}
+              pagination={false}
+            />
+          ),
+          onOk() {},
+        });
+      }
+    });
+  };
   // 弹窗区域
   const [modalTitle, setModalTitle] = useState('');
   const [modalV, setModalV] = useState(false);
@@ -162,6 +316,8 @@ const Repair = () => {
     setModalV,
     getTable,
     editInfo,
+    process,
+    maintainer,
   };
   const onClickOperation = (type, record) => {
     if (type === 'add') {
@@ -182,7 +338,7 @@ const Repair = () => {
       cancelText: '取消',
       icon: <QuestionCircleFilled />,
       onOk() {
-        del({ id: record.id }).then(r => {
+        delRepair({ id: record.id }).then(r => {
           if (r.code === 0) {
             notification.success({
               message: r.msg,
@@ -198,6 +354,7 @@ const Repair = () => {
   return (
     <div className="normalWrap">
       <OpeModal {...modalProps} />
+      <HandleModal {...handleProps} />
       <div className="searchWrapper">
         <span>筛选：</span>
         <Select

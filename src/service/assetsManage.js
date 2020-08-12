@@ -171,5 +171,32 @@ export function getRepairProgress(p) {
 export function getDesList(p) {
   return request('/integrated/repair/historyContent', {
     method: 'get',
+    params: p,
+  });
+}
+export function addRepair(p) {
+  return request('/integrated/repair/save', {
+    method: 'post',
+    data: p,
+    requestType: 'form',
+  });
+}
+export function delRepair(p) {
+  return request('/integrated/repair/delete', {
+    method: 'get',
+    params: p,
+  });
+}
+export function getLogList(p) {
+  return request('/integrated/repair/log', {
+    method: 'get',
+    params: p,
+  });
+}
+export function handleRepair(p) {
+  return request('/integrated/repair/handle', {
+    method: 'post',
+    data: p,
+    requestType: 'form',
   });
 }
