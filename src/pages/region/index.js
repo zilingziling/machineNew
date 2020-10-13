@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tree, Table, Button } from 'antd';
+import { isAuthorized } from '@/utils/func';
 const { DirectoryTree } = Tree;
 const Region = () => {
   const onSelect = (keys, event) => {
@@ -46,7 +47,9 @@ const Region = () => {
         showIcon={false}
       />
       <div className="normalTable mt0">
-        <Button className="shadowBtn">新增</Button>
+        <Button disabled={isAuthorized('add')} className="shadowBtn">
+          新增
+        </Button>
         <Table className="mt1" columns={column} />
       </div>
     </div>

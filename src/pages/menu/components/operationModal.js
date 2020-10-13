@@ -58,10 +58,6 @@ const OperationModal = ({
               });
               getOperationList();
               opeCancel();
-              //  操作菜单后
-              dispatch({
-                type: 'global/getAuth',
-              });
             }
           });
         }

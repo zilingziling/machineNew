@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, DatePicker, Divider, Input, Modal, notification, Select, Table } from 'antd';
 import { myLocale } from '@/utils/common';
 import { del, getBrandList, getBrandsTree, getTypes } from '@/service/device';
-import { showTotal } from '@/utils/func';
+import { isAuthorized, showTotal } from '@/utils/func';
 import { delAssets, getAssetsList, getMaintainSelect } from '@/service/assetsManage';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import ListModal from '@/pages/assetsManage/list/listModal';
@@ -133,13 +133,22 @@ const List = () => {
       title: '操作',
       render: (text, record) => (
         <>
-          <a href="#!" className="opeA" onClick={() => onClickOperation('edit', record)}>
+          <Button
+            disabled={isAuthorized('edit')}
+            href="#!"
+            className="opeA"
+            onClick={() => onClickOperation('edit', record)}
+          >
             编辑
-          </a>
+          </Button>
           <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
+          <Button
+            disabled={isAuthorized('delete')}
+            className="opeA"
+            onClick={() => onClickDel(record)}
+          >
             删除
-          </a>
+          </Button>
         </>
       ),
     },

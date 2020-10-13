@@ -3,11 +3,10 @@ import { Button, Divider, Input, Modal, notification, Table } from 'antd';
 import RoleModal from '@/pages/role/component/roleModal';
 import { myLocale } from '@/utils/common';
 import { delRole, getRoleList } from '@/service/role';
-import { showTotal, tableOpe } from '@/utils/func';
+import { isAuthorized, showTotal, tableOpe } from '@/utils/func';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { delOperation } from '@/service/menu';
 import AuthComponent from '@/components/authButton';
-const AuthButton = AuthComponent(Button);
 const Role = () => {
   // table列表 区域
   const [tableList, setTableList] = useState([]);
@@ -59,18 +58,21 @@ const Role = () => {
       title: '操作',
       render: (text, record) => (
         <>
-          <AuthButton
-            href="#!"
-            authName="编辑"
+          <Button
+            disabled={isAuthorized('edit')}
             className="opeA"
             onClick={() => onClickRole('edit', record)}
           >
             编辑
-          </AuthButton>
+          </Button>
           <Divider type="vertical" />
-          <AuthButton href="#!" authName="删除" className="opeA" onClick={() => onClickDel(record)}>
+          <Button
+            disabled={isAuthorized('delete')}
+            className="opeA"
+            onClick={() => onClickDel(record)}
+          >
             删除
-          </AuthButton>
+          </Button>
         </>
       ),
     },
@@ -138,9 +140,13 @@ const Role = () => {
         </Button>
       </div>
       <br />
-      <AuthButton className="shadowBtn" authName="新增" onClick={() => onClickRole('add')}>
+      <Button
+        disabled={isAuthorized('add')}
+        className="shadowBtn"
+        onClick={() => onClickRole('add')}
+      >
         新增
-      </AuthButton>
+      </Button>
       <Table
         rowKey="id"
         pagination={pagination}

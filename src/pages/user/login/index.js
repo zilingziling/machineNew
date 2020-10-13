@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import styles from './login.less';
 import '@ant-design/compatible/assets/index.css';
 import { Button, Input, Form, notification } from 'antd';
-import { login } from '@/service/login';
+import { getMenus, login } from '@/service/login';
 import SparkMd5 from 'spark-md5';
 import { history } from 'umi';
 import { webSocket } from '@/utils/websocket';
+import { connect } from 'dva';
 const Login = ({}) => {
   const [form] = Form.useForm();
   const [authCode, setCode] = useState('');
@@ -36,7 +37,7 @@ const Login = ({}) => {
                   message: '登陆成功',
                   description: `欢迎你！${window.localStorage.getItem('account') || ''}`,
                 });
-              }, 300);
+              }, 1000);
               form.resetFields();
             }
           });
@@ -100,5 +101,6 @@ const Login = ({}) => {
     </div>
   );
 };
-
-export default Login;
+export default connect(({ global }) => ({
+  moreMenu: global.moreMenu,
+}))(Login);

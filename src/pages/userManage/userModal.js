@@ -56,10 +56,6 @@ const UserModal = ({ modalTitle, modalV, setModalV, getTable, editInfo, dispatch
               });
               getTable();
               onModalCancel();
-              //  操作菜单后
-              dispatch({
-                type: 'global/getAuth',
-              });
             }
           });
         }

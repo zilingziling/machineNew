@@ -188,7 +188,8 @@ export default {
   },
   proxy: {
     '/integrated': {
-      target: 'http://172.16.3.104:8103/', //dev
+      // target: 'http://172.16.3.104:8103/', //dev
+      target: 'http://172.16.3.155:8103/', //dev
       changeOrigin: true,
       pathRewrite: { '': '' },
     },

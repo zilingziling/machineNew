@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useReducer, useState } from 'react';
 import { Button, Divider, Form, Input, Table, Popconfirm, Modal, notification, Select } from 'antd';
-import { showTotal } from '../../../utils/func';
+import { isAuthorized, showTotal } from '../../../utils/func';
 import { getBrandsTree, getTypes } from '@/service/device';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { myLocale } from '@/utils/common';
@@ -95,13 +95,22 @@ const Factory = () => {
             维修记录
           </a>
           <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickOperation('edit', record)}>
+          <Button
+            disabled={isAuthorized('edit')}
+            href="#!"
+            className="opeA"
+            onClick={() => onClickOperation('edit', record)}
+          >
             编辑
-          </a>
+          </Button>
           <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
+          <Button
+            disabled={isAuthorized('delete')}
+            className="opeA"
+            onClick={() => onClickDel(record)}
+          >
             删除
-          </a>
+          </Button>
         </>
       ),
     },

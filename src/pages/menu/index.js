@@ -3,7 +3,7 @@ import { Tree, Table, Button, Divider, notification, Modal } from 'antd';
 import styles from './index.less';
 import { delMenu, delOperation, getMenuTree, getOpeList } from '@/service/menu';
 import OpeModal from '@/pages/menu/components/opeModal';
-import { formatTreeData, showTotal } from '@/utils/func';
+import { formatTreeData, isAuthorized, showTotal } from '@/utils/func';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { myLocale } from '@/utils/common';
 import OperationModal from '@/pages/menu/components/operationModal';
@@ -65,13 +65,21 @@ const Menu = props => {
       title: '操作',
       render: (text, record) => (
         <>
-          <a href="#!" className="opeA" onClick={() => onClickAdd('edit', record)}>
+          <Button
+            disabled={isAuthorized('edit')}
+            className="opeA"
+            onClick={() => onClickAdd('edit', record)}
+          >
             编辑
-          </a>
+          </Button>
           <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
+          <Button
+            disabled={isAuthorized('delete')}
+            className="opeA"
+            onClick={() => onClickDel(record)}
+          >
             删除
-          </a>
+          </Button>
         </>
       ),
     },
@@ -123,10 +131,6 @@ const Menu = props => {
             });
             getOperationList();
             setEditInfo({});
-            //  操作菜单后
-            props.dispatch({
-              type: 'global/getAuth',
-            });
           }
         });
       },
@@ -147,10 +151,6 @@ const Menu = props => {
             });
             getMenu();
             setMenuInfo({});
-            //  操作菜单后
-            props.dispatch({
-              type: 'global/getAuth',
-            });
           }
         });
       },
@@ -165,9 +165,6 @@ const Menu = props => {
   const [editInfo, setEditInfo] = useState({});
   const [totalPage, setTotalPage] = useState('');
   const getOperationList = id => {
-    props.dispatch({
-      type: 'global/getAuth',
-    });
     getOpeList({ menuId: id || selectMenuInfo.id, page: current, limit: pageSize }).then(r => {
       if (r.code === 0) {
         setOpeList(r.data.list);
@@ -217,15 +214,15 @@ const Menu = props => {
       <OperationModal {...operationProps} />
       <div>
         <div className={styles.ope}>
-          <a href="#!" onClick={() => onClickOpe('add')}>
+          <a href="#!" disabled={isAuthorized('add')} onClick={() => onClickOpe('add')}>
             新增
           </a>
           <Divider className={styles.divider} type="vertical" />
-          <a href="#!" onClick={() => onClickOpe('edit')}>
+          <a href="#!" disabled={isAuthorized('edit')} onClick={() => onClickOpe('edit')}>
             编辑
           </a>
           <Divider className={styles.divider} type="vertical" />
-          <a href="#!" onClick={() => onClickOpe('del')}>
+          <a href="#!" disabled={isAuthorized('delete')} onClick={() => onClickOpe('del')}>
             删除
           </a>
         </div>

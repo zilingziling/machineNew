@@ -6,22 +6,24 @@ import { Dropdown, Menu, Modal } from 'antd';
 import { history } from 'umi';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { connect, router } from 'dva';
+import { getMenus } from '@/service/login';
 const activeNav = {
   borderBottom: '2px solid rgba(234,190,54,1)',
 };
 const { confirm } = Modal;
 const BasicLayout = props => {
   // 获取菜单
+  const [menus, setMenus] = useState([]);
   useEffect(() => {
-    props.dispatch({
-      type: 'global/getAuth',
+    getMenus().then(r => {
+      if (r.code === 0) {
+        window.localStorage.setItem('menuData', JSON.stringify(r.data));
+        if (r.data.length) {
+          setMenus(r.data[0].children);
+        }
+      }
     });
   }, []);
-
-  let menus = [];
-  if (props.auth.length) {
-    menus = props.auth[0].children;
-  }
   return (
     <div className={styles.bodyWrap}>
       <div className={styles.header}>

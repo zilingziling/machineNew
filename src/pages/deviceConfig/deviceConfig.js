@@ -8,7 +8,7 @@ import {
   getDeviceConfig,
   getDeviceConfigTree,
 } from '@/service/device';
-import { formatTreeData, showTotal } from '@/utils/func';
+import { formatTreeData, isAuthorized, showTotal } from '@/utils/func';
 import { myLocale } from '@/utils/common';
 import DeviceConfigModal from '@/pages/deviceConfig/deviceConfigModal';
 import { QuestionCircleFilled } from '@ant-design/icons';
@@ -98,13 +98,21 @@ const DeviceConfig = () => {
       title: '操作',
       render: (text, record) => (
         <>
-          <a href="#!" className="opeA" onClick={() => onClickOperation('edit', record)}>
+          <Button
+            disabled={isAuthorized('edit')}
+            className="opeA"
+            onClick={() => onClickOperation('edit', record)}
+          >
             编辑
-          </a>
+          </Button>
           <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
+          <Button
+            disabled={isAuthorized('delete')}
+            className="opeA"
+            onClick={() => onClickDel(record)}
+          >
             删除
-          </a>
+          </Button>
         </>
       ),
     },

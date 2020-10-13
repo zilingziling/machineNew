@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PageLoading from '@/components/pageLoading/pageLoading';
 import { Redirect } from 'umi';
-const SecurityLayout = (props) => {
+import { getMenus } from '@/service/login';
+import { connect } from 'dva';
+const SecurityLayout = props => {
   const [isReady, setReady] = useState(false);
-  useEffect(() => setReady(true), []);
+  useEffect(() => {
+    setReady(true);
+  }, []);
   const token = window.localStorage.getItem('token');
   if (!isReady) return <PageLoading />;
   if (!token && window.location.pathname !== '/login') {
@@ -11,4 +15,6 @@ const SecurityLayout = (props) => {
   }
   return props.children;
 };
-export default SecurityLayout;
+export default connect(({ global }) => ({
+  global,
+}))(SecurityLayout);

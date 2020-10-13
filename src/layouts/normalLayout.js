@@ -10,21 +10,25 @@ const { Header, Content, Sider } = Layout;
 const navActive = {
   background: '#2986d4',
 };
-const NormalLayout = (props) => {
-  // 获取菜单
-  // useEffect(() => {
-  //   props.dispatch({
-  //     type: 'global/getAuth',
-  //   });
-  // }, []);
-  const { moreMenu, assetsMenu, route } = props;
-  const menus = route.path === '/more' ? moreMenu : route.path.includes('assets') ? assetsMenu : [];
+const NormalLayout = props => {
+  const { route } = props;
   const [show, setShow] = useState(false);
+  const [menus, setMenus] = useState([]);
+  useEffect(() => {
+    const menuData = JSON.parse(window.localStorage.getItem('menuData'));
+    const a = menuData[0].children.filter(item => item.route === '/more');
+    const moreArr = a.length ? a[0].children : [];
+    const b = menuData[0].children.filter(item => item.route === '/assetsManage');
+    const assetsArr = b.length ? b[0].children : [];
+    const menus1 =
+      route.path === '/more' ? moreArr : route.path.includes('assets') ? assetsArr : [];
+    setMenus(menus1);
+  }, []);
   return (
     <Layout>
       <Sider>
         <div className={styles.side}>
-          {menus.map((item) => {
+          {menus.map(item => {
             if (
               item.route === '/assetsManage/assetsMore' &&
               item.children &&
@@ -44,20 +48,18 @@ const NormalLayout = (props) => {
                   </div>
                   {show && (
                     <div className={styles.drop}>
-                      {
-                        // console.log(item.children)
-                        item.children.map((i) => (
-                          <NavLink
-                            activeStyle={navActive}
-                            className={styles.sideLink}
-                            key={i.id}
-                            to={i.route}
-                            style={{ fontSize: '0.8rem' }}
-                          >
-                            {i.name}
-                          </NavLink>
-                        ))
-                      }
+                      {// console.log(item.children)
+                      item.children.map(i => (
+                        <NavLink
+                          activeStyle={navActive}
+                          className={styles.sideLink}
+                          key={i.id}
+                          to={i.route}
+                          style={{ fontSize: '0.8rem' }}
+                        >
+                          {i.name}
+                        </NavLink>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -91,7 +93,4 @@ const NormalLayout = (props) => {
     </Layout>
   );
 };
-export default connect(({ global }) => ({
-  moreMenu: global.moreMenu,
-  assetsMenu: global.assetsMenu,
-}))(NormalLayout);
+export default NormalLayout;

@@ -51,10 +51,6 @@ const OpeModal = ({ menuTitle, menuV, setMV, getMenu, selectMenuInfo, treeData, 
               });
               getMenu();
               onClose();
-              //  操作菜单后
-              dispatch({
-                type: 'global/getAuth',
-              });
             }
           });
         }

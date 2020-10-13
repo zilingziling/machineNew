@@ -1,5 +1,4 @@
 import React from 'react';
-import { Divider } from 'antd';
 
 export function showTotal(totalPage, total) {
   return (
@@ -203,4 +202,25 @@ export const getParentSchool = (classRoomId, treeData) => {
     }
   });
   return params;
+};
+// 鉴权
+export const isAuthorized = authName => {
+  const pathname = window.location.pathname;
+  const menuData = JSON.parse(window.localStorage.getItem('menuData'));
+  let authArr = []; // 操作权限数组
+  const findOpes = arr => {
+    arr.forEach(item => {
+      if (item.route === pathname) {
+        authArr = item.children;
+      } else {
+        if (item.children && item.children.length) {
+          findOpes(item.children);
+        }
+      }
+    });
+  };
+  findOpes(menuData);
+  // a 存在则有权限
+  const a = authArr.find(i => i.code === authName);
+  return !a;
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Divider, Input, Modal, notification, Table } from 'antd';
-import { showTotal } from '@/utils/func';
+import { isAuthorized, showTotal } from '@/utils/func';
 import { myLocale } from '@/utils/common';
 import { delUser, getUserList, resetPwd } from '@/service/userManage';
 import UserModal from '@/pages/userManage/userModal';
@@ -69,9 +69,13 @@ const UserManage = () => {
       title: '操作',
       render: (text, record) => (
         <>
-          <a href="#!" className="opeA" onClick={() => onClickOperation('edit', record)}>
+          <Button
+            disabled={isAuthorized('edit')}
+            className="opeA"
+            onClick={() => onClickOperation('edit', record)}
+          >
             编辑
-          </a>
+          </Button>
           <Divider type="vertical" />
           <a href="#!" className="opeA" onClick={() => onClickChange(record)}>
             修改密码
@@ -81,9 +85,13 @@ const UserManage = () => {
             重置密码
           </a>
           <Divider type="vertical" />
-          <a href="#!" className="opeA" onClick={() => onClickDel(record)}>
+          <Button
+            disabled={isAuthorized('delete')}
+            className="opeA"
+            onClick={() => onClickDel(record)}
+          >
             删除
-          </a>
+          </Button>
         </>
       ),
     },
@@ -186,7 +194,11 @@ const UserManage = () => {
         </Button>
       </div>
       <br />
-      <Button className="shadowBtn" onClick={() => onClickOperation('add')}>
+      <Button
+        disabled={isAuthorized('add')}
+        className="shadowBtn"
+        onClick={() => onClickOperation('add')}
+      >
         新增
       </Button>
       <Table
