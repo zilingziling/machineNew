@@ -1,11 +1,11 @@
 import config from '../../config/config';
 import { uint8Buff2Str } from '@/utils/func';
-const urlPro = 'ws://172.16.3.104:18880/room';
-const urlDev = `ws://${window.location.hostname}:28880/room`;
+const urlDev = 'ws://172.16.3.104:18880/room';
+const urlPro = `ws://${window.location.hostname}:28880/room`;
 let seqno = 0;
 export const webSocket = () => {
   try {
-    let ws = new WebSocket(urlPro);
+    let ws = new WebSocket(urlDev);
     window.ws = ws;
     ws.onopen = function(evt) {
       console.log('websocket open ...');

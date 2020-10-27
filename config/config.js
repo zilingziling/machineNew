@@ -31,6 +31,11 @@ export default {
               component: './warning',
             },
             {
+              path: '/scene',
+              name: '情景编辑',
+              component: './scene',
+            },
+            {
               path: '/bigData',
               name: '运维数据',
               icon: 'bigData',
@@ -41,6 +46,11 @@ export default {
               icon: 'more',
               component: '../layouts/normalLayout.js',
               routes: [
+                {
+                  path: '/more/codeStore',
+                  name: '管理码库',
+                  component: './codeStore',
+                },
                 {
                   path: '/more/role',
                   name: '角色管理',
@@ -188,8 +198,8 @@ export default {
   },
   proxy: {
     '/integrated': {
-      // target: 'http://172.16.3.104:8103/', //dev
-      target: 'http://172.16.3.155:8103/', //dev
+      target: 'http://172.16.3.104:8103/', //dev
+      // target: 'http://172.16.3.155:8103/', //dev
       changeOrigin: true,
       pathRewrite: { '': '' },
     },

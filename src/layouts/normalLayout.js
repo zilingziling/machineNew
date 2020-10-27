@@ -55,7 +55,7 @@ const NormalLayout = props => {
                           className={styles.sideLink}
                           key={i.id}
                           to={i.route}
-                          style={{ fontSize: '0.8rem' }}
+                          style={{ fontSize: '0.12rem' }}
                         >
                           {i.name}
                         </NavLink>

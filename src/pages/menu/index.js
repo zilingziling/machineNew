@@ -66,7 +66,7 @@ const Menu = props => {
       render: (text, record) => (
         <>
           <Button
-            disabled={isAuthorized('edit')}
+            // disabled={isAuthorized('edit')}
             className="opeA"
             onClick={() => onClickAdd('edit', record)}
           >
@@ -74,7 +74,7 @@ const Menu = props => {
           </Button>
           <Divider type="vertical" />
           <Button
-            disabled={isAuthorized('delete')}
+            // disabled={isAuthorized('delete')}
             className="opeA"
             onClick={() => onClickDel(record)}
           >

@@ -208,6 +208,11 @@ const ClassRooms = ({
   useEffect(() => {
     getWebsocketMsg();
   }, [roomData]);
+  const onClickScene = () => {
+    history.push({
+      pathname: '/scene',
+    });
+  };
   return (
     <div className={styles.deviceControlWrapper}>
       <section className={styles.top} onClick={e => e.nativeEvent.stopImmediatePropagation()}>
@@ -230,6 +235,9 @@ const ClassRooms = ({
           </Button>
           <Button className="shadowBtn mr1" onClick={onReset}>
             重置
+          </Button>
+          <Button className="shadowBtn mr1" onClick={onClickScene}>
+            情景编辑
           </Button>
           <Tooltip placement="rightTop" title={getTooltips} autoAdjustOverflow color="#236FB0">
             <QuestionCircleOutlined className={styles.ask} />

@@ -222,5 +222,44 @@ export const isAuthorized = authName => {
   findOpes(menuData);
   // a 存在则有权限
   const a = authArr.find(i => i.code === authName);
-  return !a;
+  const account = window.localStorage.getItem('account');
+  if (account === 'admin') {
+    return false;
+  } else {
+    return !a;
+  }
+};
+//  1rem=100px
+export const resizeListener = () => {
+  // 定义设计图的尺寸 1920
+  let designSize = 1920;
+  // 获取 html 元素
+  let html = document.documentElement;
+  // 定义窗口的宽度
+  let clientW = html.clientWidth;
+  let sizeNum = 100;
+  if (clientW <= 1360) {
+    sizeNum = 80;
+  } else if (clientW <= 1400) {
+    sizeNum = 80;
+  } else if (clientW <= 1600) {
+    sizeNum = 80;
+  }
+  // html 的fontsize 大小
+  let htmlRem = (clientW * sizeNum) / designSize;
+  html.style.fontSize = htmlRem + 'px';
+};
+export const formLayout = {
+  labelCol: {
+    span: 6,
+  },
+  wrapperCol: {
+    span: 14,
+  },
+};
+export const tailLayout = {
+  wrapperCol: {
+    offset: 8,
+    span: 16,
+  },
 };

@@ -1,0 +1,45 @@
+.sceneWrapper{
+  box-sizing: border-box;
+  padding: 0.24rem;
+  height: 100%;
+  .scenes{
+    display: grid;
+    grid-template-columns: 2.4rem 5rem 11rem;
+    grid-template-rows: 7.4rem;
+    margin-top: 0.18rem;
+    .left,.right,.center{
+      border: 1px solid rgba(69,233,252,.25);
+      background: rgba(56,150,222,.45);
+    }
+    .top{
+      display: flex;
+      justify-content: space-between;
+      height: 0.48rem;
+      align-items: center;
+      box-sizing: border-box;
+      padding:0 0.06rem;
+      span{
+        font-size: 0.14rem;
+      }
+      .ml1{
+        margin-right: 0.08rem;
+      }
+      .opes{
+        display: flex;
+        align-items: center;
+        img{
+          width: 0.2rem;
+          height: 0.2rem;
+          margin-left: 0.08rem;
+        }
+      }
+    }
+    .left{
+      margin-right: 4px;
+
+    }
+    .center{
+      margin-right: 0.8rem;
+    }
+  }
+}

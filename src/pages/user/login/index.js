@@ -7,11 +7,17 @@ import SparkMd5 from 'spark-md5';
 import { history } from 'umi';
 import { webSocket } from '@/utils/websocket';
 import { connect } from 'dva';
+import { resizeListener } from '@/utils/func';
 const Login = ({}) => {
   const [form] = Form.useForm();
   const [authCode, setCode] = useState('');
   useEffect(() => {
     getCode();
+    window.addEventListener('resize', resizeListener);
+    resizeListener();
+    return () => {
+      window.removeEventListener('resize', resizeListener);
+    };
   }, []);
   const getCode = () => {
     const number = Math.floor(Math.random() * 10000);
