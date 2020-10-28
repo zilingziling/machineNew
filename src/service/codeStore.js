@@ -43,3 +43,25 @@ export function getVerify(p) {
     method: 'get',
   });
 }
+// 编码方式
+export function getCodingWay(p) {
+  return request('/integrated/dict/findByParent?code=codingWay', {
+    method: 'get',
+  });
+}
+// 保存码库
+export function saveCodeStore(p) {
+  return request('/integrated/code/save', {
+    method: 'post',
+    data: p,
+    requestType: 'form',
+  });
+}
+// 删除码库
+export function delCodeStore(p) {
+  return request('/integrated/code/delete', {
+    method: 'post',
+    data: p,
+    requestType: 'form',
+  });
+}

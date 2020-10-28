@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Divider, Input, Select, Table } from 'antd';
+import { Button, Divider, Input, Modal, notification, Select, Table } from 'antd';
 import { isAuthorized, showTotal } from '@/utils/func';
 import { myLocale } from '@/utils/common';
-import { getBrandsTree, getTypes } from '@/service/device';
-import { getCodeList } from '@/service/codeStore';
+import { del, getBrandsTree, getTypes } from '@/service/device';
+import { delCodeStore, getCodeList } from '@/service/codeStore';
 import Add from '@/pages/codeStore/components/add';
+import { QuestionCircleFilled } from '@ant-design/icons';
 
 const CodeStore = () => {
   // table列表 区域
@@ -109,34 +110,66 @@ const CodeStore = () => {
       title: '操作',
       render: (text, record) => (
         <>
-          <Button disabled={isAuthorized('edit')} className="opeA">
+          <Button
+            onClick={() => onClickAdd('edit', record)}
+            disabled={isAuthorized('edit')}
+            className="opeA"
+          >
             编辑
           </Button>
           <Divider type="vertical" />
-          <Button disabled={isAuthorized('delete')} className="opeA">
+          <Button
+            onClick={() => onClickDel(record)}
+            disabled={isAuthorized('delete')}
+            className="opeA"
+          >
             删除
           </Button>
         </>
       ),
     },
   ];
+  const { confirm } = Modal;
+  function onClickDel(record) {
+    confirm({
+      title: '确认删除吗？',
+      okText: '确定',
+      cancelText: '取消',
+      icon: <QuestionCircleFilled />,
+      onOk() {
+        delCodeStore({ id: record.id }).then(r => {
+          if (r.code === 0) {
+            notification.success({
+              message: r.msg,
+            });
+            getTable();
+          }
+        });
+      },
+      onCancel() {},
+    });
+  }
+
   // 弹窗
   const [modalV, setModalV] = useState(false);
   const [title, setTitle] = useState('');
+  const [editInfo, setEditInfo] = useState({});
   const modalProps = {
     modalV,
     setModalV,
     title,
     types,
     brand,
+    getTable,
+    editInfo,
   };
-  const onClickAdd = type => {
-    switch (type) {
-      case 'add':
-        setTitle('添加控制码');
-      case 'edit':
-
-      default:
+  const onClickAdd = (type, record) => {
+    if (type === 'add') {
+      setEditInfo({});
+      setTitle('添加控制码');
+    } else if (type === 'edit') {
+      setTitle('编辑控制码');
+      setEditInfo(record);
     }
     setModalV(true);
   };

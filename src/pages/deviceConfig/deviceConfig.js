@@ -12,6 +12,7 @@ import { formatTreeData, isAuthorized, showTotal } from '@/utils/func';
 import { myLocale } from '@/utils/common';
 import DeviceConfigModal from '@/pages/deviceConfig/deviceConfigModal';
 import { QuestionCircleFilled } from '@ant-design/icons';
+import ChooseDevice from '@/pages/deviceConfig/components/chooseDevice';
 const { DirectoryTree } = Tree;
 const DeviceConfig = () => {
   // table列表 区域
@@ -162,6 +163,7 @@ const DeviceConfig = () => {
   };
   // 删除
   const { confirm } = Modal;
+  const [chooseV, setChooseV] = useState(false);
   function onClickDel(record) {
     confirm({
       title: `确认删除${record.name} 吗？`,
@@ -182,9 +184,18 @@ const DeviceConfig = () => {
       onCancel() {},
     });
   }
+  // 点击添加设备
+  const onClickAddDevice = () => {
+    setChooseV(true);
+  };
+  const chooseDeviceProps = {
+    chooseV,
+    setChooseV,
+  };
   return (
     <div className="treeWrapper">
       <DeviceConfigModal {...modalProps} />
+      <ChooseDevice {...chooseDeviceProps} />
       <DirectoryTree
         multiple
         showLine
@@ -207,7 +218,7 @@ const DeviceConfig = () => {
         <Button className="shadowBtn mr1" onClick={onReset}>
           重置
         </Button>
-        <Button className="shadowBtn" onClick={() => onClickOperation('add')}>
+        <Button className="shadowBtn" onClick={onClickAddDevice}>
           添加设备
         </Button>
         <Table

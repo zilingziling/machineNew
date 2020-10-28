@@ -11,9 +11,13 @@ const BaseModal = ({
   cancelText = '',
   className,
   width = 540,
+  closable,
+  maskClosable,
 }) => {
   return (
     <Modal
+      closable={closable}
+      maskClosable={maskClosable}
       width={width}
       className={className}
       getContainer={false}

@@ -251,10 +251,10 @@ export const resizeListener = () => {
 };
 export const formLayout = {
   labelCol: {
-    span: 6,
+    span: 5,
   },
   wrapperCol: {
-    span: 14,
+    span: 19,
   },
 };
 export const tailLayout = {
@@ -263,3 +263,4 @@ export const tailLayout = {
     span: 16,
   },
 };
+export const treeSelectStyle = { maxHeight: 400, overflow: 'auto' };
