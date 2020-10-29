@@ -34,6 +34,7 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
   //  编辑回显
   useEffect(() => {
     if (Object.keys(editInfo).length && title.includes('编辑')) {
+      console.log(editInfo);
       let p = connectWay.find(item => item.id === editInfo.connection_way_id);
       setCodeName(p.code);
       form.setFieldsValue({
@@ -57,6 +58,7 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
     }
   }, [editInfo]);
   const onOk = () => {
+    let nameList = [];
     if (activeKey === '1') {
       form
         .validateFields(['brand.id', 'type.id', 'model'])
@@ -65,14 +67,22 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
         })
         .catch(err => {});
     } else if (activeKey === '2') {
+      nameList = ['brand.id', 'type.id', 'model', 'connectionWay.id', 'connectOpening'];
+      if (codeName === 'RS232' || codeName === 'RS485') {
+        nameList = [...nameList, 'baudRate', 'dataBit', 'stopBit', 'verify'];
+      } else if (codeName === 'network') {
+        nameList = [...nameList, 'port', 'username', 'password'];
+      } else if (codeName === 'redLine') {
+        nameList = [...nameList, 'redLine'];
+      }
       form
-        .validateFields()
+        .validateFields(nameList)
         .then(value => {
           setActiveKey('3');
         })
         .catch(err => {});
     } else if (activeKey === '3') {
-      form.validateFields().then(value => {
+      form.validateFields(['codingWay.id', ...nameList]).then(value => {
         const p = { ...value };
         if (title.includes('编辑')) {
           p.id = editInfo.id;
@@ -265,7 +275,7 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
             >
               <Select className="mr1">
                 {codeData.map(type => (
-                  <Select.Option value={type.id} key={type.id}>
+                  <Select.Option value={type.code} key={type.id}>
                     {type.name}
                   </Select.Option>
                 ))}
@@ -284,7 +294,7 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
                 >
                   <Select className="mr1">
                     {baudRate.map(type => (
-                      <Select.Option value={type.id} key={type.id}>
+                      <Select.Option value={type.code} key={type.id}>
                         {type.name}
                       </Select.Option>
                     ))}
@@ -301,7 +311,7 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
                 >
                   <Select className="mr1">
                     {dataBit.map(type => (
-                      <Select.Option value={type.id} key={type.id}>
+                      <Select.Option value={type.code} key={type.id}>
                         {type.name}
                       </Select.Option>
                     ))}
@@ -318,7 +328,7 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
                 >
                   <Select className="mr1">
                     {stopBit.map(type => (
-                      <Select.Option value={type.id} key={type.id}>
+                      <Select.Option value={type.code} key={type.id}>
                         {type.name}
                       </Select.Option>
                     ))}
@@ -335,7 +345,7 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
                 >
                   <Select className="mr1">
                     {verify.map(type => (
-                      <Select.Option value={type.id} key={type.id}>
+                      <Select.Option value={type.code} key={type.id}>
                         {type.name}
                       </Select.Option>
                     ))}

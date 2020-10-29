@@ -1,9 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, notification, Button, InputNumber, Select } from 'antd';
-import { add_edit, addDevice, getBrandsTree, getCommands, getTypes } from '@/service/device';
+import { Form, Input, notification, Button, InputNumber, Select, TreeSelect } from 'antd';
+import {
+  add_edit,
+  addDevice,
+  getBrandsTree,
+  getCommands,
+  getDeviceConfigTree,
+  getTypes,
+} from '@/service/device';
 import BaseModal from '@/components/baseModal';
 import { layout } from '@/utils/common';
-
+import { formatTreeData, treeSelectStyle } from '@/utils/func';
+import {
+  getBaudRate,
+  getCodingWay,
+  getConnectWay,
+  getDataBit,
+  getStopBit,
+  getVerify,
+} from '@/service/codeStore';
+const flex = {
+  display: 'flex',
+  alignItems: 'center',
+};
 const DeviceConfigModal = ({
   modalTitle,
   modalV,
@@ -13,25 +32,40 @@ const DeviceConfigModal = ({
   classroomId,
   command,
   setCommand,
+  setChooseV,
 }) => {
   const [form] = Form.useForm();
-
+  const [baudRate, setBaudRate] = useState(''); // 波特率
+  const [dataBit, setDataBit] = useState(''); // 数据位
+  const [stopBit, setStopBit] = useState(''); // 停止位
+  const [verify, setVerify] = useState(''); // 校验
+  const [classroomTree, setClassroom] = useState([]);
   const onModalCancel = () => {
     setModalV(false);
   };
   const [typeId, setTypeId] = useState('');
   //  编辑回显
   useEffect(() => {
-    if (Object.keys(editInfo).length && modalTitle.includes('编辑')) {
+    console.log(editInfo);
+    if (Object.keys(editInfo).length) {
       form.setFieldsValue({
-        name: editInfo.name,
-        'type.id': editInfo.typeId,
-        'brand.id': editInfo.brandId,
+        name: editInfo.brand + editInfo.type,
+        'type.id': editInfo.typeId || editInfo.type_id,
+        'brand.id': editInfo.brandId || editInfo.brand_id,
         serialNumber: editInfo.serialNumber,
         equipmentSort: editInfo.equipmentSort,
         model: editInfo.model,
+        baudRate: editInfo.baud_rate,
+        dataBit: editInfo.date_bit,
+        stopBit: editInfo.stop_bit,
+        verify: editInfo.verify,
+        ip: editInfo.ip,
+        port: editInfo.port,
+        username: editInfo.username,
+        password: editInfo.password,
+        redLine: editInfo.red_line,
       });
-      if (editInfo.commands.length) {
+      if (editInfo.commands && editInfo.commands.length) {
         let formatedCommad = [];
         getCommands({ typeId: editInfo.typeId }).then(r => {
           if (r.code === 0 && r.data.length) {
@@ -61,13 +95,17 @@ const DeviceConfigModal = ({
       .validateFields()
       .then(value => {
         if (value) {
-          let params = {};
+          let params = { ...value };
           let controlCommandIds = command.map(item => item.id);
           let commands = command.map(item => {
             if (value[item.id]) {
               return value[item.id];
             }
           });
+          // 码库相关
+          params['connectionWay.id'] = editInfo.connection_way_id;
+          params['connectOpening'] = editInfo.connect_opening;
+          params['codingWay.id'] = editInfo.coding_way_id;
           params['classroom.id'] = classroomId;
           params.name = value.name;
           params['type.id'] = value['type.id'];
@@ -106,6 +144,30 @@ const DeviceConfigModal = ({
     getBrandsTree().then(r => {
       if (r.code === 0) {
         setBrands(r.data);
+      }
+    });
+    getDeviceConfigTree().then(r => {
+      setClassroom(formatTreeData(r.data, true));
+    });
+
+    getBaudRate().then(r => {
+      if (r.code === 0) {
+        setBaudRate(r.data);
+      }
+    });
+    getDataBit().then(r => {
+      if (r.code === 0) {
+        setDataBit(r.data);
+      }
+    });
+    getStopBit().then(r => {
+      if (r.code === 0) {
+        setStopBit(r.data);
+      }
+    });
+    getVerify().then(r => {
+      if (r.code === 0) {
+        setVerify(r.data);
       }
     });
   }, []);
@@ -149,21 +211,38 @@ const DeviceConfigModal = ({
       } else setCommand([]);
     });
   }, [typeId]);
+  const onClickChoose = () => {
+    setChooseV(true);
+    setModalV(false);
+  };
   return (
-    <BaseModal onOk={onModalOk} title={modalTitle} visible={modalV} onCancel={onModalCancel}>
+    <BaseModal
+      width={600}
+      onOk={onModalOk}
+      title={modalTitle}
+      visible={modalV}
+      onCancel={onModalCancel}
+    >
       <Form form={form} {...layout} className="mt1" onValuesChange={formValueChange}>
-        <Form.Item
-          name="type.id"
-          label="设备类型"
-          rules={[{ required: true, message: '请选择设备类型！' }]}
-        >
-          <Select className="mr1">
-            {types.map(type => (
-              <Select.Option value={type.id} key={type.id}>
-                {type.name}
-              </Select.Option>
-            ))}
-          </Select>
+        <Form.Item label="设备类型">
+          <div style={{ display: 'flex' }}>
+            <Form.Item
+              rules={[{ required: true, message: '请选择设备类型！' }]}
+              noStyle
+              name="type.id"
+            >
+              <Select className="mr1">
+                {types.map(type => (
+                  <Select.Option value={type.id} key={type.id}>
+                    {type.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Button className="shadowBtn" onClick={onClickChoose}>
+              选择设备
+            </Button>
+          </div>
         </Form.Item>
         <Form.Item
           name="brand.id"
@@ -219,6 +298,117 @@ const DeviceConfigModal = ({
               </Form.Item>
             ))
           : null}
+        {editInfo.connectionWay === 'RS232' || editInfo.connectionWay === 'RS485' ? (
+          <>
+            <Form.Item
+              name="baudRate"
+              label="波特率"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Select className="mr1">
+                {baudRate.map(type => (
+                  <Select.Option value={type.code} key={type.id}>
+                    {type.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="dataBit"
+              label="数据位"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Select className="mr1">
+                {dataBit.map(type => (
+                  <Select.Option value={type.code} key={type.id}>
+                    {type.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="stopBit"
+              label="停止位"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Select className="mr1">
+                {stopBit.map(type => (
+                  <Select.Option value={type.code} key={type.id}>
+                    {type.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="verify"
+              label="校验"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Select className="mr1">
+                {verify.map(type => (
+                  <Select.Option value={type.code} key={type.id}>
+                    {type.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </>
+        ) : null}
+        {editInfo.connectionWay === 'network' ? (
+          <>
+            <Form.Item
+              name="port"
+              label="端口号"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item name="username" label="用户名">
+              <Input />
+            </Form.Item>
+            <Form.Item name="password" label="密码">
+              <Input />
+            </Form.Item>
+          </>
+        ) : null}
+        {editInfo.connectionWay === 'redLine' ? (
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: '请选择教室！',
+              },
+            ]}
+            name="redLine"
+            label="选择教室"
+          >
+            <TreeSelect
+              treeData={classroomTree}
+              dropdownStyle={treeSelectStyle}
+              placeholder="选择教室用于红外学习"
+            />
+          </Form.Item>
+        ) : null}
       </Form>
     </BaseModal>
   );

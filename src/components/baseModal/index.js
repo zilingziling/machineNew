@@ -13,9 +13,11 @@ const BaseModal = ({
   width = 540,
   closable,
   maskClosable,
+  footer,
 }) => {
   return (
     <Modal
+      footer={footer}
       closable={closable}
       maskClosable={maskClosable}
       width={width}

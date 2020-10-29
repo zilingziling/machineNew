@@ -123,16 +123,7 @@ const DeviceConfig = () => {
   const [modalV, setModalV] = useState(false);
   const [editInfo, setEditInfo] = useState({});
   const [command, setCommand] = useState([]);
-  const modalProps = {
-    modalTitle,
-    modalV,
-    setModalV,
-    getTable,
-    editInfo,
-    classroomId,
-    command,
-    setCommand,
-  };
+
   const onClickOperation = (type, record) => {
     if (type === 'add') {
       if (!classroomId) {
@@ -191,6 +182,20 @@ const DeviceConfig = () => {
   const chooseDeviceProps = {
     chooseV,
     setChooseV,
+    setModalV,
+    setEditInfo,
+    setModalTitle,
+  };
+  const modalProps = {
+    modalTitle,
+    modalV,
+    setModalV,
+    getTable,
+    editInfo,
+    classroomId,
+    command,
+    setCommand,
+    setChooseV,
   };
   return (
     <div className="treeWrapper">
@@ -218,7 +223,7 @@ const DeviceConfig = () => {
         <Button className="shadowBtn mr1" onClick={onReset}>
           重置
         </Button>
-        <Button className="shadowBtn" onClick={onClickAddDevice}>
+        <Button disabled={!classroomId} className="shadowBtn" onClick={onClickAddDevice}>
           添加设备
         </Button>
         <Table
