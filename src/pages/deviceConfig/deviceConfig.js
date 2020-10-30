@@ -92,9 +92,8 @@ const DeviceConfig = () => {
     },
     {
       title: '型号',
-      dataIndex: 'equipmentSort',
+      dataIndex: 'model',
     },
-
     {
       title: '操作',
       render: (text, record) => (

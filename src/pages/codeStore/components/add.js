@@ -34,7 +34,6 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
   //  编辑回显
   useEffect(() => {
     if (Object.keys(editInfo).length && title.includes('编辑')) {
-      console.log(editInfo);
       let p = connectWay.find(item => item.id === editInfo.connection_way_id);
       setCodeName(p.code);
       form.setFieldsValue({
@@ -57,8 +56,19 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
       form.resetFields();
     }
   }, [editInfo]);
-  const onOk = () => {
+  const getNameList = () => {
     let nameList = [];
+    nameList = ['brand.id', 'type.id', 'model', 'connectionWay.id', 'connectOpening'];
+    if (codeName === 'RS232' || codeName === 'RS485') {
+      nameList = [...nameList, 'baudRate', 'dataBit', 'stopBit', 'verify'];
+    } else if (codeName === 'network') {
+      nameList = [...nameList, 'port', 'username', 'password'];
+    } else if (codeName === 'redLine') {
+      nameList = [...nameList, 'redLine'];
+    }
+    return nameList;
+  };
+  const onOk = () => {
     if (activeKey === '1') {
       form
         .validateFields(['brand.id', 'type.id', 'model'])
@@ -67,14 +77,7 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
         })
         .catch(err => {});
     } else if (activeKey === '2') {
-      nameList = ['brand.id', 'type.id', 'model', 'connectionWay.id', 'connectOpening'];
-      if (codeName === 'RS232' || codeName === 'RS485') {
-        nameList = [...nameList, 'baudRate', 'dataBit', 'stopBit', 'verify'];
-      } else if (codeName === 'network') {
-        nameList = [...nameList, 'port', 'username', 'password'];
-      } else if (codeName === 'redLine') {
-        nameList = [...nameList, 'redLine'];
-      }
+      const nameList = getNameList();
       form
         .validateFields(nameList)
         .then(value => {
@@ -82,6 +85,7 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
         })
         .catch(err => {});
     } else if (activeKey === '3') {
+      const nameList = getNameList();
       form.validateFields(['codingWay.id', ...nameList]).then(value => {
         const p = { ...value };
         if (title.includes('编辑')) {
@@ -92,11 +96,11 @@ const Add = ({ modalV, setModalV, title, types, brand, getTable, editInfo }) => 
             notification.success({
               message: r.msg,
             });
+            getTable();
+            form.resetFields();
+            setModalV(false);
+            setActiveKey('1');
           }
-          getTable();
-          form.resetFields();
-          setModalV(false);
-          setActiveKey('1');
         });
       });
     }

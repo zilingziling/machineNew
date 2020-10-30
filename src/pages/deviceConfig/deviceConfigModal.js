@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, notification, Button, InputNumber, Select, TreeSelect } from 'antd';
+import { Form, Input, notification, Button, Tabs, Select, TreeSelect } from 'antd';
 import {
   add_edit,
   addDevice,
@@ -10,7 +10,7 @@ import {
 } from '@/service/device';
 import BaseModal from '@/components/baseModal';
 import { layout } from '@/utils/common';
-import { formatTreeData, treeSelectStyle } from '@/utils/func';
+import { center, formatTreeData, treeSelectStyle } from '@/utils/func';
 import {
   getBaudRate,
   getCodingWay,
@@ -22,7 +22,9 @@ import {
 const flex = {
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'center',
 };
+const { TabPane } = Tabs;
 const DeviceConfigModal = ({
   modalTitle,
   modalV,
@@ -40,13 +42,15 @@ const DeviceConfigModal = ({
   const [stopBit, setStopBit] = useState(''); // 停止位
   const [verify, setVerify] = useState(''); // 校验
   const [classroomTree, setClassroom] = useState([]);
+  const [activeKey, setActiveKey] = useState('1');
+
   const onModalCancel = () => {
     setModalV(false);
+    setActiveKey('1');
   };
   const [typeId, setTypeId] = useState('');
   //  编辑回显
   useEffect(() => {
-    console.log(editInfo);
     if (Object.keys(editInfo).length) {
       form.setFieldsValue({
         name: editInfo.brand + editInfo.type,
@@ -89,7 +93,6 @@ const DeviceConfigModal = ({
       form.resetFields();
     }
   }, [editInfo]);
-
   const onModalOk = () => {
     form
       .validateFields()
@@ -126,6 +129,7 @@ const DeviceConfigModal = ({
               });
               getTable();
               onModalCancel();
+              setActiveKey('1');
             }
           });
         }
@@ -215,23 +219,17 @@ const DeviceConfigModal = ({
     setChooseV(true);
     setModalV(false);
   };
-  return (
-    <BaseModal
-      width={600}
-      onOk={onModalOk}
-      title={modalTitle}
-      visible={modalV}
-      onCancel={onModalCancel}
-    >
-      <Form form={form} {...layout} className="mt1" onValuesChange={formValueChange}>
+  const commonParams = () => {
+    return (
+      <>
         <Form.Item label="设备类型">
-          <div style={{ display: 'flex' }}>
+          <div style={flex}>
             <Form.Item
               rules={[{ required: true, message: '请选择设备类型！' }]}
               noStyle
               name="type.id"
             >
-              <Select className="mr1">
+              <Select className={modalTitle.includes('编辑') ? '' : 'mr1'}>
                 {types.map(type => (
                   <Select.Option value={type.id} key={type.id}>
                     {type.name}
@@ -239,9 +237,11 @@ const DeviceConfigModal = ({
                 ))}
               </Select>
             </Form.Item>
-            <Button className="shadowBtn" onClick={onClickChoose}>
-              选择设备
-            </Button>
+            {!modalTitle.includes('编辑') ? (
+              <Button className="shadowBtn" onClick={onClickChoose}>
+                选择设备
+              </Button>
+            ) : null}
           </div>
         </Form.Item>
         <Form.Item
@@ -267,37 +267,6 @@ const DeviceConfigModal = ({
         >
           <Input />
         </Form.Item>
-        {modalTitle.includes('编辑') && (
-          <Form.Item
-            name="equipmentSort"
-            label="设备序号"
-            rules={[{ required: true, message: '请输入设备序号！' }]}
-          >
-            <Input />
-          </Form.Item>
-        )}
-        {show && (
-          <Form.Item
-            name="serialNumber"
-            label="串号"
-            rules={[{ required: true, message: '请输入中控串号！' }]}
-          >
-            <Input />
-          </Form.Item>
-        )}
-        {command.length
-          ? command.map(item => (
-              <Form.Item
-                key={item.id}
-                name={item.id}
-                label={item.name}
-                initialValue={item.command}
-                rules={[{ required: true, message: '请输入控制指令！' }]}
-              >
-                <Input />
-              </Form.Item>
-            ))
-          : null}
         {editInfo.connectionWay === 'RS232' || editInfo.connectionWay === 'RS485' ? (
           <>
             <Form.Item
@@ -409,7 +378,102 @@ const DeviceConfigModal = ({
             />
           </Form.Item>
         ) : null}
-      </Form>
+      </>
+    );
+  };
+  const getForm = () => {
+    if (modalTitle.includes('编辑')) {
+      return (
+        <Tabs disabled activeKey={activeKey}>
+          <TabPane tab="端口参数" key="1">
+            <Form
+              name="firstTab"
+              form={form}
+              {...layout}
+              className="mt1"
+              onValuesChange={formValueChange}
+            >
+              {commonParams()}
+            </Form>
+            <div style={center} className="mt1">
+              <Button className="shadowBtn" onClick={() => setActiveKey('2')}>
+                下一步
+              </Button>
+            </div>
+          </TabPane>
+          <TabPane tab="控制码" key="2">
+            <Form
+              name="secondTab"
+              form={form}
+              {...layout}
+              className="mt1"
+              onValuesChange={formValueChange}
+            >
+              {modalTitle.includes('编辑') && (
+                <Form.Item
+                  name="equipmentSort"
+                  label="设备序号"
+                  rules={[{ required: true, message: '请输入设备序号！' }]}
+                >
+                  <Input />
+                </Form.Item>
+              )}
+              {show && (
+                <Form.Item
+                  name="serialNumber"
+                  label="串号"
+                  rules={[{ required: true, message: '请输入中控串号！' }]}
+                >
+                  <Input />
+                </Form.Item>
+              )}
+              {command.length
+                ? command.map(item => (
+                    <Form.Item
+                      key={item.id}
+                      name={item.id}
+                      label={item.name}
+                      initialValue={item.command}
+                      rules={[{ required: true, message: '请输入控制指令！' }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  ))
+                : null}
+            </Form>
+            <div style={flex} className="mt1">
+              <Button className="shadowBtn mr1" onClick={() => setActiveKey('1')}>
+                上一步
+              </Button>
+              <Button className="shadowBtn" onClick={onModalOk}>
+                保存
+              </Button>
+            </div>
+          </TabPane>
+        </Tabs>
+      );
+    } else {
+      return (
+        <Form form={form} {...layout} className="mt1" onValuesChange={formValueChange}>
+          {commonParams()}
+          <div style={center}>
+            <Button className="shadowBtn" onClick={onModalOk}>
+              保存设备
+            </Button>
+          </div>
+        </Form>
+      );
+    }
+  };
+  return (
+    <BaseModal
+      width={600}
+      title={modalTitle}
+      visible={modalV}
+      onCancel={onModalCancel}
+      footer={null}
+    >
+      {getForm()}
     </BaseModal>
   );
 };

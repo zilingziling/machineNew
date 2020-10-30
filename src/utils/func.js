@@ -264,3 +264,4 @@ export const tailLayout = {
   },
 };
 export const treeSelectStyle = { maxHeight: 400, overflow: 'auto' };
+export const center = { textAlign: 'center' };
